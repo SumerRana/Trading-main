@@ -30,7 +30,9 @@ interface Offer {
   time: string; // Time field
 }
 
-let tokenAmounts: number[] = new Array(10);
+// let tokenAmounts: number[] = new Array(10);
+// let OfferSubmitted: boolean = false;
+
 
 const App: React.FC = () => {
   // Accessing the Web3ModalContext
@@ -44,6 +46,15 @@ const App: React.FC = () => {
   const [rockAllowance, setRockAllowance] = useState("");
   const [woodAllowance, setWoodAllowance] = useState("");
   const [woolAllowance, setWoolAllowance] = useState("");
+
+  const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
+  const [tokensOfferedData, setTokensOfferedData] = useState(Array(5).fill(undefined));
+  const [tokensWantedData, setTokensWantedData] = useState(Array(5).fill(undefined));
+
+  
+  const [OfferSubmitted, setOfferSubmit] = useState(false);
+
+
 
   // State for tokens offered and tokens wanted
   const [tokensOffered, setTokensOffered] = useState([
@@ -67,48 +78,52 @@ const App: React.FC = () => {
 
   // State for open offers
   const [openOffers, setOpenOffers] = useState<Offer[]>([]);
-  const tokensWantedData = Array(5);
-  const tokensOfferedData = Array(5);
+  // const tokensWantedData = Array(5);
+  // const tokensOfferedData = Array(5);
 
-  const getWoodAllowance = async () => {
-    if (web3 && account && chainId && tokenAmounts[0] > 0) {
-      const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
-      setWoodAllowance(String(Number(_woodAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getRockAllowance = async () => {
-    if (web3 && account && chainId && tokenAmounts[1] > 0) {
-      const _rockAllowance = await RockInTheBlockchainLandWrapper?.allowance();
-      setRockAllowance(String(Number(_rockAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getClayAllowance = async () => {
-    if (web3 && account && chainId && tokenAmounts[2] > 0) {
-      const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
-      setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getWoolAllowance = async () => {
-    if (web3 && account && chainId && tokenAmounts[3] > 0) {
-      const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
-      setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getFishAllowance = async () => {
-    if (web3 && account && chainId && tokenAmounts[4] > 0) {
-      const _fishAllowance = await FishInTheBlockchainLandWrapper?.allowance();
-      setFishAllowance(String(Number(_fishAllowance) / 10 ** 18) || "0");
-    }
-  }
+  // const getWoodAllowance = async () => {
+  //   if (web3 && account && chainId && tokenAmounts[0] > 0) {
+  //     const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
+  //     setWoodAllowance(String(Number(_woodAllowance) / 10 ** 18) || "0");
+  //   }
+  // }
+  // const getRockAllowance = async () => {
+  //   if (web3 && account && chainId && tokenAmounts[1] > 0) {
+  //     const _rockAllowance = await RockInTheBlockchainLandWrapper?.allowance();
+  //     setRockAllowance(String(Number(_rockAllowance) / 10 ** 18) || "0");
+  //   }
+  // }
+  // const getClayAllowance = async () => {
+  //   if (web3 && account && chainId && tokenAmounts[2] > 0) {
+  //     const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
+  //     setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
+  //   }
+  // }
+  // const getWoolAllowance = async () => {
+  //   if (web3 && account && chainId && tokenAmounts[3] > 0) {
+  //     const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
+  //     setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
+  //   }
+  // }
+  // const getFishAllowance = async () => {
+  //   if (web3 && account && chainId && tokenAmounts[4] > 0) {
+  //     const _fishAllowance = await FishInTheBlockchainLandWrapper?.allowance();
+  //     setFishAllowance(String(Number(_fishAllowance) / 10 ** 18) || "0");
+  //   }
+  // }
   
 
+  // useEffect(() => {
+  //   getWoodAllowance();
+  //   getRockAllowance();
+  //   getClayAllowance();
+  //   getWoolAllowance();
+  //   getFishAllowance();
+  // });
+
   useEffect(() => {
-    getWoodAllowance();
-    getRockAllowance();
-    getClayAllowance();
-    getWoolAllowance();
-    getFishAllowance();
-  });
+    console.log(tokenAmounts);
+  }, [tokenAmounts]);
 
   // Function to add a new token to the tokensOffered state
   const handleAddTokenOffered = () => {
@@ -121,7 +136,8 @@ const App: React.FC = () => {
   const handleAddTokenWanted = () => {
     const newToken = { id: tokensWanted.length + 1, token: "", amount: 0 };
     setTokensWanted([...tokensWanted, newToken]);
-    console.log(newToken);
+    // console.log({newToken, tokensWanted});
+    
   };
 
   // Function to handle changes in the tokensOffered state
@@ -134,7 +150,7 @@ const App: React.FC = () => {
       token.id === id ? { ...token, [field]: value } : token
     );
     setTokensOffered(updatedTokens);
-    // console.log(updatedTokens);
+    console.log(updatedTokens);
     
   };
 
@@ -153,7 +169,101 @@ const App: React.FC = () => {
   }
 
   // Function to handle form submission
-  const handleSubmit = useCallback(async () => {
+  const handleSubmitOffer = useCallback(async () => {
+    // Validate the form inputs before submitting
+    if (tokensOffered.some((token) => token.token === "" || token.amount === 0)) {
+      alert("Please fill in all the token offered fields.");
+      return;
+    }
+    if (tokensWanted.some((token) => token.token === "" || token.amount === 0)) {
+      alert("Please fill in all the token wanted fields.");
+      return;
+    }
+
+    //console.log(tokensOffered)
+    //console.log(tokensWanted)
+
+    
+    // Create an array to store the ordered Offered tokens
+    console.log(tokensOffered);
+    console.log(tokensWanted);
+
+    const newOfferedData = Array(5).fill(undefined); // Create an array with 5 undefined elements
+
+    for (let i = 0; i < tokensOffered.length; i++) {
+      if (tokensOffered[i].token === "WOOD") {
+        newOfferedData[0] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "ROCK") {
+        newOfferedData[1] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "CLAY") {
+        newOfferedData[2] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "WOOL") {
+        newOfferedData[3] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "FISH") {
+        newOfferedData[4] = tokensOffered[i].amount;
+      }
+    }
+    console.log(newOfferedData);
+
+    setTokensOfferedData(newOfferedData);
+    console.log(tokensOfferedData);
+
+    // Create an array to store the ordered Wanted tokens
+
+    
+    const newWantedData = Array(5).fill(undefined); // Create an array with 5 undefined elements
+
+    for (let i = 0; i < tokensOffered.length; i++) {
+      if (tokensOffered[i].token === "WOOD") {
+        newWantedData[0] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "ROCK") {
+        newWantedData[1] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "CLAY") {
+        newWantedData[2] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "WOOL") {
+        newWantedData[3] = tokensOffered[i].amount;
+      } else if (tokensOffered[i].token === "FISH") {
+        newWantedData[4] = tokensOffered[i].amount;
+      }
+    }
+
+    setTokensWantedData(newWantedData);
+    console.log(tokensWantedData)
+
+    const newTokenAmounts = Array(10).fill(undefined);
+
+    for (let i = 0; i < tokensOfferedData.length; i++) {
+      newTokenAmounts[i] = tokensOfferedData[i]
+      //console.log(tokenAmounts);
+    }
+
+
+    for (let i = 0; i < tokensWantedData.length; i++) {
+      newTokenAmounts[i + 5] = tokensWantedData[i]
+      //console.log(tokenAmounts);
+    }
+
+    for(let i =0; i < 10; i++) {
+      if (typeof newTokenAmounts[i] === "undefined") {
+        newTokenAmounts[i] = 0;
+        //console.log(tokenAmounts);
+      }
+    }
+    setTokenAmounts(newTokenAmounts);
+
+    console.log(tokenAmounts);
+    
+
+    
+    const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
+    console.log(tokenAmountsTuple);
+
+    setOfferSubmit(true);
+
+  }, [web3, account, tokensOffered, tokensWanted])
+
+  // Function to handle form submission
+  const handleCreateOffer = useCallback(async () => {
     // Validate the form inputs before submitting
     if (tokensOffered.some((token) => token.token === "" || token.amount === 0)) {
       alert("Please fill in all the token offered fields.");
@@ -180,7 +290,7 @@ const App: React.FC = () => {
         tokensOfferedData[4] = tokensOffered[i].amount;
       }
     }
-    console.log(tokensOfferedData);
+    //console.log(tokensOfferedData);
 
     // Create an array to store the ordered Wanted tokens
 
@@ -197,11 +307,11 @@ const App: React.FC = () => {
         tokensWantedData[4] = tokensWanted[i].amount;
       }
     }
-    console.log(tokensWantedData);
+    //console.log(tokensWantedData);
     
 
-    console.log(tokensOfferedData)
-    console.log(tokensWantedData)
+    //console.log(tokensOfferedData)
+    //console.log(tokensWantedData)
 
     for (let i = 0; i < tokensOfferedData.length; i++) {
       tokenAmounts[i] = tokensOfferedData[i]
@@ -209,7 +319,7 @@ const App: React.FC = () => {
 
 
     for (let i = 0; i < tokensWantedData.length; i++) {
-      tokenAmounts[i + 5] = tokensOfferedData[i]
+      tokenAmounts[i + 5] = tokensWantedData[i]
     }
 
     for(let i =0; i < 10; i++) {
@@ -217,10 +327,10 @@ const App: React.FC = () => {
         tokenAmounts[i] = 0;
       }
     }
-    console.log(tokenAmounts);
+    //console.log(tokenAmounts);
     
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
-    console.log(tokenAmountsTuple);
+    //console.log(tokenAmountsTuple);
 
     if (web3 && account && chainId) {
       tradeOfferWrapper
@@ -451,10 +561,10 @@ const App: React.FC = () => {
 
       <button onClick={handleAddTokenWanted}>Add Another</button>
 
-      {/* Create Offer button */}
+      {/* Create Offer button
       <button id="create-offer" onClick={handleSubmit}>
         CREATE OFFER TO TRADE
-      </button>
+      </button> */}
 
       {/* {(tokenAmounts[0] > 0)? (
         <button id="create-offer" onClick={handleApproveWood}>
@@ -466,20 +576,30 @@ const App: React.FC = () => {
         </button>
       )} */}
 
-      {/* <button id="create-offer" onClick={
-        tokenAmounts[0] > 0 ? handleApproveWood : 
-        tokenAmounts[1] > 0 ? handleApproveRock : 
-        tokenAmounts[2] > 0 ? handleApproveClay : 
-        tokenAmounts[3] > 0 ? handleApproveWool : 
-        tokenAmounts[4] > 0 ? handleApproveFish : 
-        handleSubmit}>
-        {tokenAmounts[0] > 0 ? 'APPROVE WOOD' : 
+      
+        
+      <button id="create-offer" onClick={
+        // OfferSubmitted === false ? handleSubmitOffer :
+        // tokenAmounts[0] > 0 ? handleApproveWood :
+        // tokenAmounts[1] > 0 ? handleApproveRock :
+        // tokenAmounts[2] > 0 ? handleApproveClay :
+        // tokenAmounts[3] > 0 ? handleApproveWool :
+        // tokenAmounts[4] > 0 ? handleApproveFish :
+        // handleCreateOffer
+        ()=>{
+          console.log(tokenAmounts)
+        }
+        
+      }
+        >
+        {OfferSubmitted === false ? 'Submit Offer' : 
+        tokenAmounts[0] > 0 ? 'APPROVE WOOD' : 
         tokenAmounts[1] > 0 ? 'APPROVE ROCK' : 
         tokenAmounts[2] > 0 ? 'APPROVE CLAY' : 
         tokenAmounts[3] > 0 ? 'APPROVE WOOL' : 
         tokenAmounts[4] > 0 ? 'APPROVE FISH' : 
         'CREATE OFFER'}
-      </button> */}
+      </button>
 
 
 
