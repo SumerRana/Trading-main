@@ -81,6 +81,7 @@ const App: React.FC = () => {
   // const tokensWantedData = Array(5);
   // const tokensOfferedData = Array(5);
 
+  // edited by developer
   // const getWoodAllowance = async () => {
   //   if (web3 && account && chainId && tokenAmounts[0] > 0) {
   //     const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
