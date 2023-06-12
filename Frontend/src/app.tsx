@@ -148,7 +148,7 @@ const App: React.FC = () => {
     console.log(condition4Ref);
     console.log(condition5Ref);
     console.log(tempTokenAmounts);
-  }, [tokenAmounts]);
+  }, [tokenAmounts, tempTokenAmounts, woodAllowance, rockAllowance, clayAllowance, woolAllowance, fishAllowance]);
 
 
   // Function to add a new token to the tokensOffered state
@@ -210,6 +210,13 @@ const App: React.FC = () => {
     setOfferSubmit(true);
     console.log(tokensOffered);
     console.log(tokensWanted);
+    
+    console.log(condition1Ref);
+    console.log(condition2Ref);
+    console.log(condition3Ref);
+    console.log(condition4Ref);
+    console.log(condition5Ref);
+    console.log(tempTokenAmounts);
 
   }, [web3, account, tokensOffered, tokensWanted])
 
