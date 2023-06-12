@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import "./app.css";
 import { Web3ModalContext } from "./contexts/Web3ModalProvider";
 import { BlockchainContext } from "./contexts/BlockchainProvider";
@@ -66,6 +66,31 @@ const App: React.FC = () => {
   const [tokensWantedData, setTokensWantedData] = useState(Array(5).fill(undefined));
 
   const [OfferSubmitted, setOfferSubmit] = useState(false);
+  const condition1Ref = useRef<boolean>(false);
+  const condition2Ref = useRef<boolean>(false);
+  const condition3Ref = useRef<boolean>(false);
+  const condition4Ref = useRef<boolean>(false);
+  const condition5Ref = useRef<boolean>(false);
+
+  const getTokenAllowance = async () => {
+    if (web3 && account && chainId) {
+      const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
+      setWoodAllowance(String(Number(_woodAllowance) / 10 ** 18) || "0");
+    
+      const _rockAllowance = await RockInTheBlockchainLandWrapper?.allowance();
+      setRockAllowance(String(Number(_rockAllowance) / 10 ** 18) || "0");
+    
+      const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
+      setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
+      console.log(_clayAllowance);
+    
+      const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
+      setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
+    
+      const _fishAllowance = await FishInTheBlockchainLandWrapper?.allowance();
+      setFishAllowance(String(Number(_fishAllowance) / 10 ** 18) || "0");
+    }
+  }
 
 
   const tempTokenAmounts: number[] = new Array(10);
@@ -85,54 +110,44 @@ const App: React.FC = () => {
   // const tokensWantedData = Array(5);
   // const tokensOfferedData = Array(5);
 
-  const getWoodAllowance = async () => {
-    if (web3 && account && chainId) {
-      const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
-      setWoodAllowance(String(Number(_woodAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getRockAllowance = async () => {
-    if (web3 && account && chainId) {
-      const _rockAllowance = await RockInTheBlockchainLandWrapper?.allowance();
-      setRockAllowance(String(Number(_rockAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getClayAllowance = async () => {
-    if (web3 && account && chainId) {
-      const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
-      setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
-      console.log(_clayAllowance);
-    }
-    
-  }
-  const getWoolAllowance = async () => {
-    if (web3 && account && chainId) {
-      const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
-      setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
-    }
-  }
-  const getFishAllowance = async () => {
-    if (web3 && account && chainId) {
-      const _fishAllowance = await FishInTheBlockchainLandWrapper?.allowance();
-      setFishAllowance(String(Number(_fishAllowance) / 10 ** 18) || "0");
-    }
-  }
 
 
   useEffect(() => {
-    getWoodAllowance();
-    getRockAllowance();
-    getClayAllowance();
-    getWoolAllowance();
-    getFishAllowance();
+    getTokenAllowance();
   });
 
   useEffect(() => {
+    console.log(woodAllowance);
+    console.log(rockAllowance);
     console.log(clayAllowance);
-  }, [clayAllowance]);
+    console.log(woolAllowance);
+    console.log(fishAllowance);
+  }, [woodAllowance, rockAllowance, clayAllowance, woolAllowance, fishAllowance]);
 
   useEffect(() => {
-    console.log(tokenAmounts);
+    const tempTokenAmounts = [...tokenAmounts];
+    console.log(tempTokenAmounts);
+    if (tempTokenAmounts[0] > 0 && woodAllowance === "0") {
+      condition1Ref.current = true;
+    }
+    if (tempTokenAmounts[1] > 0 && rockAllowance === "0") {
+      condition2Ref.current = true;
+    }
+    if (tempTokenAmounts[2] > 0 && clayAllowance === "0") {
+      condition3Ref.current = true;
+    }
+    if (tempTokenAmounts[3] > 0 && woolAllowance === "0") {
+      condition4Ref.current = true;
+    }
+    if (tempTokenAmounts[4] > 0 && fishAllowance === "0") {
+      condition5Ref.current = true;
+    }
+    console.log(condition1Ref);
+    console.log(condition2Ref);
+    console.log(condition3Ref);
+    console.log(condition4Ref);
+    console.log(condition5Ref);
+    console.log(tempTokenAmounts);
   }, [tokenAmounts]);
 
 
@@ -273,6 +288,7 @@ const App: React.FC = () => {
 
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
     console.log(tokenAmountsTuple);
+
 
   }
 
@@ -583,22 +599,20 @@ const App: React.FC = () => {
 
       <button id="create-offer" onClick={
         OfferSubmitted === false ? handleSubmitOffer :
-          tempTokenAmounts[0] > 0 && woodAllowance === "0" ? handleApproveWood :
-            tempTokenAmounts[1] > 0 && rockAllowance === "0" ? handleApproveRock :
-              tempTokenAmounts[2] > 0 && clayAllowance === "0" ? handleApproveClay :
-                tempTokenAmounts[3] > 0 && woolAllowance === "0" ? handleApproveWool :
-                  tempTokenAmounts[4] > 0 && fishAllowance === "0" ? handleApproveFish :
+        condition1Ref.current === true ? handleApproveWood :
+        condition2Ref.current === true ? handleApproveRock :
+        condition3Ref.current === true ? handleApproveClay :
+        condition4Ref.current === true ? handleApproveWool :
+        condition5Ref.current === true ? handleApproveFish :
                     handleCreateOffer
-
-
       }
       >
         {OfferSubmitted === false ? 'Submit Offer' :
-          tempTokenAmounts[0] > 0 && woodAllowance === "0" ? 'APPROVE WOOD' :
-            tempTokenAmounts[1] > 0 && rockAllowance === "0" ? 'APPROVE ROCK' :
-              tempTokenAmounts[2] > 0 && clayAllowance === "0" ? 'APPROVE CLAY' :
-                tempTokenAmounts[3] > 0 && woolAllowance === "0" ? 'APPROVE WOOL' :
-                  tempTokenAmounts[4] > 0 && fishAllowance === "0" ? 'APPROVE FISH' :
+          condition1Ref.current === true ? 'APPROVE WOOD' :
+          condition2Ref.current === true? 'APPROVE ROCK' :
+          condition3Ref.current === true? 'APPROVE CLAY' :
+          condition4Ref.current === true? 'APPROVE WOOL' :
+          condition5Ref.current === true? 'APPROVE FISH' :
                     'CREATE OFFER'}
       </button>
 
