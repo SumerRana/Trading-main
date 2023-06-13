@@ -661,11 +661,11 @@ const App: React.FC = () => {
         buttonName === 'Approve ROCK' ? handleApproveRock() :
         buttonName === 'Approve CLAY' ? handleApproveClay() :
         buttonName === 'Approve WOOL' ? handleApproveWool() :
-        buttonName === 'Approve FISH' ? handleApproveFish() : 
+        buttonName === 'Approve FISH' ? handleApproveFish() :
         console.log("")
       }}
       >
-        {approvetep === tokensOffered.length ? "Create Offer" : 
+        {approvetep === tokensOffered.length ? "Create Offer" :
           buttonName}
       </button>
 
