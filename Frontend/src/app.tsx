@@ -64,6 +64,14 @@ const App: React.FC = () => {
   const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
   const [tokensOfferedData, setTokensOfferedData] = useState(Array(5).fill(undefined));
   const [tokensWantedData, setTokensWantedData] = useState(Array(5).fill(undefined));
+  const [isApproved, setIsApproved] = useState({
+    WOOD:false,
+    ROCK:false,
+    CLAY:false,
+    WOOL:false,
+    FISH:false
+
+  })
 
   const [OfferSubmitted, setOfferSubmit] = useState(false);
   const condition1Ref = useRef<boolean>(false);
@@ -86,7 +94,7 @@ const App: React.FC = () => {
     
       const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
       setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
-      console.log(_clayAllowance);
+      // console.log(_clayAllowance);
     
       const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
       setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
@@ -121,16 +129,16 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    console.log(woodAllowance);
-    console.log(rockAllowance);
-    console.log(clayAllowance);
-    console.log(woolAllowance);
-    console.log(fishAllowance);
+    // console.log(woodAllowance);
+    // console.log(rockAllowance);
+    // console.log(clayAllowance);
+    // console.log(woolAllowance);
+    // console.log(fishAllowance);
   }, [woodAllowance, rockAllowance, clayAllowance, woolAllowance, fishAllowance]);
 
   useEffect(() => {
     const tempTokenAmounts = [...tokenAmounts];
-    console.log(tempTokenAmounts);
+    // console.log(tempTokenAmounts);
     if (tempTokenAmounts[0] > 0 && woodAllowance === "0") {
       condition1Ref.current = true;
     }
@@ -151,7 +159,7 @@ const App: React.FC = () => {
     // console.log(condition3Ref);
     // console.log(condition4Ref);
     // console.log(condition5Ref);
-    console.log(tempTokenAmounts);
+    // console.log(tempTokenAmounts);
   }, [tokenAmounts, tempTokenAmounts, woodAllowance, rockAllowance, clayAllowance, woolAllowance, fishAllowance]);
 
 
@@ -159,14 +167,14 @@ const App: React.FC = () => {
   const handleAddTokenOffered = () => {
     const newToken = { id: tokensOffered.length + 1, token: "", amount: 0 };
     setTokensOffered([...tokensOffered, newToken]);
-    // console.log(newToken);
+    console.log(newToken);
   };
 
   // Function to add a new token to the tokensWanted state
   const handleAddTokenWanted = () => {
     const newToken = { id: tokensWanted.length + 1, token: "", amount: 0 };
     setTokensWanted([...tokensWanted, newToken]);
-    // console.log({newToken, tokensWanted});
+    console.log({newToken, tokensWanted});
 
   };
 
@@ -180,7 +188,7 @@ const App: React.FC = () => {
       token.id === id ? { ...token, [field]: value } : token
     );
     setTokensOffered(updatedTokens);
-    console.log(updatedTokens);
+    // console.log(updatedTokens);
 
   };
 
@@ -209,52 +217,47 @@ const App: React.FC = () => {
       alert("Please fill in all the token wanted fields.");
       return;
     }
-    const bName = `Approve ${tokensOffered[0].token}`
-    setButtonName(bName);
+    changeButtonName()
     createOrderedArray();
     // setOfferSubmit(true);
-    console.log(tokensOffered);
-    console.log(tokensWanted);
+    // console.log(tokensOffered);
+    // console.log(tokensWanted);
     
-    console.log(condition1Ref);
-    console.log(condition2Ref);
-    console.log(condition3Ref);
-    console.log(condition4Ref);
-    console.log(condition5Ref);
-    console.log(tempTokenAmounts);
+    // console.log(condition1Ref);
+    // console.log(condition2Ref);
+    // console.log(condition3Ref);
+    // console.log(condition4Ref);
+    // console.log(condition5Ref);
+    // console.log(tempTokenAmounts);
 
   }, [web3, account, tokensOffered, tokensWanted])
 
   const changeButtonName = () => {
-    tokensOffered.forEach((token, id) => {
-      setApproveStep(id + 1)
-      switch (buttonName) {
-        case 'Approve WOOD':
-          setButtonName(`Approve ${token.token}`)           
-          break
-        case 'Approve ROCK':
-          setButtonName(`Approve ${token.token}`)    
-          break
-          case 'Approve CLAY':
-            setButtonName(`Approve ${token.token}`)    
-            break
-          case 'Approve WOOL':
-            setButtonName(`Approve ${token.token}`)    
-            break
-          case 'Approve FISH':
-            setButtonName(`Approve ${token.token}`)    
-            break
-          default:
-            setButtonName("Create Offer")
-            break
+    console.log({isApproved, tokensOffered});
+    
+      for (let i = 0; i < tokensOffered.length; i++) {
+        console.log(isApproved[tokensOffered[i].token]);
+        
+
+        if (!isApproved[tokensOffered[i].token]) {
+          if (approvetep === tokensOffered.length - 1){
+            setApproveStep(i+1)
+          }else{
+            setApproveStep(i)
+          }
+          const bName = `Approve ${tokensOffered[i].token}`
+          setButtonName(bName);
+          console.log({bName}, tokensOffered[i]);
+          break;
+        }
       }
-    })}
+  }
 
   const createOrderedArray = () => {
     // Create an array to store the ordered Offered tokens
 
     const newOfferedData = Array(5).fill(undefined); // Create an array with 5 undefined elements
-    console.log(tokensOffered);
+    // console.log(tokensOffered);
 
     for (let i = 0; i < tokensOffered.length; i++) {
       if (tokensOffered[i].token === "WOOD") {
@@ -268,7 +271,7 @@ const App: React.FC = () => {
       } else if (tokensOffered[i].token === "FISH") {
         newOfferedData[4] = tokensOffered[i].amount;
       }
-      console.log(newOfferedData);
+      // console.log(newOfferedData);
     }
 
     setTokensOfferedData(newOfferedData);
@@ -290,41 +293,41 @@ const App: React.FC = () => {
       } else if (tokensWanted[i].token === "FISH") {
         newWantedData[4] = tokensWanted[i].amount;
       }
-      console.log(newWantedData);
+      // console.log(newWantedData);
     }
 
     setTokensWantedData(newWantedData);
-    console.log(tokensWantedData)
+    // console.log(tokensWantedData)
 
     const newTokenAmounts = Array(10).fill(undefined);
 
     for (let i = 0; i < newOfferedData.length; i++) {
       newTokenAmounts[i] = newOfferedData[i]
-      //console.log(tokenAmounts);
+      // console.log(tokenAmounts);
     }
 
 
     for (let i = 0; i < newWantedData.length; i++) {
       newTokenAmounts[i + 5] = newWantedData[i]
-      //console.log(tokenAmounts);
+      // console.log(tokenAmounts);
     }
 
     for (let i = 0; i < 10; i++) {
       if (typeof newTokenAmounts[i] === "undefined") {
         newTokenAmounts[i] = 0;
-        //console.log(tokenAmounts);
+        // console.log(tokenAmounts);
       }
     }
     setTokenAmounts(newTokenAmounts);
-    console.log(newTokenAmounts);
+    // console.log(newTokenAmounts);
 
-    console.log(tempTokenAmounts);
-    console.log(tokenAmounts);
+    // console.log(tempTokenAmounts);
+    // console.log(tokenAmounts);
 
 
 
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
-    console.log(tokenAmountsTuple);
+    // console.log(tokenAmountsTuple);
 
 
   }
@@ -357,7 +360,7 @@ const App: React.FC = () => {
         tokensOfferedData[4] = tokensOffered[i].amount;
       }
     }
-    //console.log(tokensOfferedData);
+    console.log(tokensOfferedData);
 
     // Create an array to store the ordered Wanted tokens
 
@@ -374,11 +377,11 @@ const App: React.FC = () => {
         tokensWantedData[4] = tokensWanted[i].amount;
       }
     }
-    //console.log(tokensWantedData);
+    // console.log(tokensWantedData);
 
 
-    //console.log(tokensOfferedData)
-    //console.log(tokensWantedData)
+    // console.log(tokensOfferedData)
+    // console.log(tokensWantedData)
 
     for (let i = 0; i < tokensOfferedData.length; i++) {
       tokenAmounts[i] = tokensOfferedData[i]
@@ -394,10 +397,10 @@ const App: React.FC = () => {
         tokenAmounts[i] = 0;
       }
     }
-    //console.log(tokenAmounts);
+    console.log(tokenAmounts);
 
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
-    console.log(tokenAmountsTuple);
+    // console.log(tokenAmountsTuple);
 
     if (web3 && account && chainId) {
       tradeOfferWrapper
@@ -433,6 +436,7 @@ const App: React.FC = () => {
     // Reset the form after submission
     setTokensOffered([{ id: 1, token: "", amount: 0 }]);
     setTokensWanted([{ id: 1, token: "", amount: 0 }]);
+    setButtonName('')
   }, [web3, account, tokensOffered, tokensWanted, tradeOfferWrapper]);
 
   // Function to connect to XDCPay
@@ -451,12 +455,14 @@ const App: React.FC = () => {
 
   const handleApproveWood = () => {
     if (web3 && account && chainId) {
-
       if (tokenAmounts[0] > 0) {
         WoodInTheBlockchainLandWrapper
           ?.approve()
           .then(() => {
             alert(" Wood Approved!");
+            setIsApproved(prevState=>{
+                  return { ...prevState, WOOD: true }
+                })
             changeButtonName()
           })
       }
@@ -470,10 +476,13 @@ const App: React.FC = () => {
           ?.approve()
           .then(() => {
             alert(" Rock Approved!");
+            setIsApproved(prevState=>{
+              return { ...prevState, ROCK: true }})
             changeButtonName()
           })
       }
     }
+    
   }
 
   const handleApproveClay = () => {
@@ -483,10 +492,14 @@ const App: React.FC = () => {
           ?.approve()
           .then(() => {
             alert(" Clay Approved!");
+            setIsApproved(prevState=>{
+              return { ...prevState, CLAY: true }})
             changeButtonName()
+
           })
       }
     }
+
   }
 
   const handleApproveWool = () => {
@@ -496,6 +509,8 @@ const App: React.FC = () => {
           ?.approve()
           .then(() => {
             alert(" Wool Approved!");
+            setIsApproved(prevState=>{
+              return { ...prevState, WOOL: true }})
             changeButtonName()
           })
       }
@@ -509,11 +524,11 @@ const App: React.FC = () => {
           ?.approve()
           .then(() => {
             alert(" Fish Approved!");
+            setIsApproved(prevState=>{
+              return { ...prevState, FISH: true }})
             changeButtonName()
           })
       }
-
-
     }
   }
 
@@ -522,7 +537,7 @@ const App: React.FC = () => {
     async (offerId: number) => {
       try {
         // Perform the necessary steps to initiate the trade
-        console.log("Initiating trade for offer ID:", offerId);
+        // console.log("Initiating trade for offer ID:", offerId);
 
         // Update the offer status to "In Progress" or any other desired value
         const updatedOffers = openOffers.map((offer) =>
@@ -542,7 +557,7 @@ const App: React.FC = () => {
         const signature = await signer.sign("Hello, World!");
 
         // Perform any necessary UI updates or display a success message to the user
-        console.log("Trade initiated successfully");
+        // console.log("Trade initiated successfully");
       } catch (error) {
         // Handle errors
         console.error("Error initiating trade:", error);
@@ -640,15 +655,15 @@ const App: React.FC = () => {
 
 
       <button id="create-offer" onClick = {() => {
-  approvetep === tokensOffered.length? handleCreateOffer():
-  buttonName === 'Submit Offer' ? handleSubmitOffer() :
-  buttonName === 'Approve WOOD' ? handleApproveWood() :
-  buttonName === 'Approve ROCK' ? handleApproveRock() :
-  buttonName === 'Approve CLAY' ? handleApproveClay() :
-  buttonName === 'Approve WOOL' ? handleApproveWool() :
-  buttonName === 'Approve FISH' ? handleApproveFish() : 
-  console.log("")
-}}
+        approvetep === tokensOffered.length? handleCreateOffer():
+        buttonName === 'Submit Offer' ? handleSubmitOffer() :
+        buttonName === 'Approve WOOD' ? handleApproveWood() :
+        buttonName === 'Approve ROCK' ? handleApproveRock() :
+        buttonName === 'Approve CLAY' ? handleApproveClay() :
+        buttonName === 'Approve WOOL' ? handleApproveWool() :
+        buttonName === 'Approve FISH' ? handleApproveFish() : 
+        console.log("")
+      }}
       >
         {approvetep === tokensOffered.length ? "Create Offer" : 
           buttonName}
