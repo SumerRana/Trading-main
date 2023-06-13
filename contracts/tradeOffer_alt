@@ -67,6 +67,8 @@ contract tradeOffer {
 
     mapping (uint256 => Offer) offerMapping;
 
+    uint256[] private offerIDs;
+
     Counters.Counter private offerCounter;
 
     constructor(
@@ -201,6 +203,9 @@ contract tradeOffer {
 
         // Update offerStatus mapping
         offerMapping[offerId].offerStatus = true;
+
+        //update OfferIDS array
+        offerIDs.push(offerId);
 
     }
 
@@ -540,6 +545,10 @@ contract tradeOffer {
         }
 
         return string(buffer);
+    }
+
+    function getNumberOfOffers() public view returns (uint256) {
+        return (offerIDs[offerIDs.length -1]);
     }
 
 }
