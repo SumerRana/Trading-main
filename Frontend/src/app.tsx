@@ -6,7 +6,18 @@ import { HashLoader } from "react-spinners";
 
 interface Offer {
   id: number;
-  offerString: string;
+  tokensOffered: { id: number; token: string; amount: number }[];
+  tokensWanted: { id: number; token: string; amount: number }[];
+  status: string;
+  creator: string | null;
+  date: string; // Date field
+  time: string; // Time field
+}
+
+interface QuerriedOffers {
+  id: number;
+  offerString: string | null;
+  offerCrreator: string | null;
   date: string; // Date field
   time: string; // Time field
 }
@@ -46,31 +57,48 @@ const App: React.FC = () => {
   const [offerStatus, setOfferStatus] = useState("");
   const [offerString, setOfferString] = useState("");
   const [offerId, setOfferId] = useState(0);
+  const [offerCreator, setOfferCreator] = useState("")
 
   const getNumberOfOffers = async () => {
     if (web3 && account && chainId) {
       const _numberOfOffers = await tradeOfferWrapper?.getNumberOfOffers();
-      setNumberOfOffers(Number(_numberOfOffers));
+      if(Number(_numberOfOffers) > 0) {
+        setNumberOfOffers(Number(_numberOfOffers));
+      }
+      else {
+        setNumberOfOffers(0);
+      }
     }
   }
 
   useEffect(() => {
+    // Prepare the data to be submitted
+    for (let i = 0; i <= numberOfOffers; i++) {
+      getOfferInfo(i);
+      const newOffer: QuerriedOffers = {
+        id: i + 1,
+        offerString: offerString,
+        offerCrreator: offerCreator,
+        date: "",
+        time: ""
+      };
+      
+    // Update the open offers state
+    setOpenOffers([...openOffers, newOffer]);
+    }
+
+
+  });
+
+  useEffect(() => {
+    
     getNumberOfOffers();
     console.log(numberOfOffers);
 
-    // Prepare the data to be submitted
-    for (let i = 1; i <= numberOfOffers; i++) {
-      const newOffer: Offer = {
-        id: i,
-        offerString: offerString,
-        date: new Date().toISOString().split("T")[0], // Get the current date
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) // Get the current time
-      };
-    }
-
-    // // Update the open offers state
-    // setOpenOffers([...openOffers, newOffer]);
-
+    getOfferInfo(0);
+    // console.log(offerStatus);
+    // console.log(offerString);
+    // console.log(offerCreator);
   });
 
 
@@ -115,7 +143,14 @@ const App: React.FC = () => {
 
       const _offerString = await tradeOfferWrapper?.getOfferString(offerId);
       setOfferString(String(_offerString));
+
+      const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
+      setOfferCreator(String(_offerCreator));
     }
+    console.log(offerStatus);
+    console.log(offerString);
+    console.log(offerCreator);
+
   }
 
 
