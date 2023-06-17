@@ -14,7 +14,7 @@ interface Offer {
   time: string; // Time field
 }
 
-interface QuerriedOffers {
+interface QuerriedOffer {
   id: number;
   offerString: string | null;
   offerCrreator: string | null;
@@ -59,10 +59,14 @@ const App: React.FC = () => {
   const [offerId, setOfferId] = useState(0);
   const [offerCreator, setOfferCreator] = useState("")
 
+  
+  // State for open offers
+  const [querriedOffers, setQuerriedOffers] = useState<QuerriedOffer[]>([]);
+
   const getNumberOfOffers = async () => {
     if (web3 && account && chainId) {
       const _numberOfOffers = await tradeOfferWrapper?.getNumberOfOffers();
-      if(Number(_numberOfOffers) > 0) {
+      if (Number(_numberOfOffers) > 0) {
         setNumberOfOffers(Number(_numberOfOffers));
       }
       else {
@@ -72,34 +76,31 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
+    getNumberOfOffers();
+    console.log(numberOfOffers);
     // Prepare the data to be submitted
-    for (let i = 0; i <= numberOfOffers; i++) {
+    for (let i = 0; i < numberOfOffers; i++) {
       getOfferInfo(i);
-      const newOffer: QuerriedOffers = {
+      const newOffer: QuerriedOffer = {
         id: i + 1,
         offerString: offerString,
         offerCrreator: offerCreator,
         date: "",
         time: ""
       };
+
+      // Update the open offers state
+      setQuerriedOffers([...querriedOffers, newOffer]);
+      console.log(querriedOffers);
+      console.log(newOffer);
       
-    // Update the open offers state
-    setOpenOffers([...openOffers, newOffer]);
     }
 
-
-  });
+  }, [numberOfOffers]);
 
   useEffect(() => {
-    
-    getNumberOfOffers();
-    console.log(numberOfOffers);
-
-    getOfferInfo(0);
-    // console.log(offerStatus);
-    // console.log(offerString);
-    // console.log(offerCreator);
-  });
+    console.log(querriedOffers);
+  }, [querriedOffers])
 
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
@@ -136,7 +137,7 @@ const App: React.FC = () => {
     }
   }
 
-  const getOfferInfo =async (offerId:number) => {
+  const getOfferInfo = async (offerId: number) => {
     if (web3 && account && chainId) {
       const _offerStatus = await tradeOfferWrapper?.getOfferStatus(offerId);
       setOfferStatus(String(Boolean(_offerStatus)));
@@ -147,9 +148,9 @@ const App: React.FC = () => {
       const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
       setOfferCreator(String(_offerCreator));
     }
-    console.log(offerStatus);
-    console.log(offerString);
-    console.log(offerCreator);
+    // console.log(offerStatus);
+    // console.log(offerString);
+    // console.log(offerCreator);
 
   }
 
@@ -166,11 +167,11 @@ const App: React.FC = () => {
   ]);
 
 
-  // State for open offers
   const [openOffers, setOpenOffers] = useState<Offer[]>([]);
 
   useEffect(() => {
     getTokenAllowance();
+    getNumberOfOffers();
   });
 
   // Declare counter states for each button
@@ -557,38 +558,38 @@ const App: React.FC = () => {
 
 
   // Function to initiate the trade
-  const initiateTrade = useCallback(
-    async (offerId: number) => {
-      try {
-        // Perform the necessary steps to initiate the trade
-        // console.log("Initiating trade for offer ID:", offerId);
+  // const initiateTrade = useCallback(
+  //   async (offerId: number) => {
+  //     try {
+  //       // Perform the necessary steps to initiate the trade
+  //       // console.log("Initiating trade for offer ID:", offerId);
 
-        // Update the offer status to "In Progress" or any other desired value
-        const updatedOffers = openOffers.map((offer) =>
-          offer.id === offerId ? { ...offer, status: "In Progress" } : offer
-        );
-        setOpenOffers(updatedOffers);
+  //       // Update the offer status to "In Progress" or any other desired value
+  //       const updatedOffers = openOffers.map((offer) =>
+  //         offer.id === offerId ? { ...offer, status: "In Progress" } : offer
+  //       );
+  //       setOpenOffers(updatedOffers);
 
-        // Optional: Interact with a contract or perform additional logic
-        // Declare and define the tradeOffer variable
-        // const tradeOffer: TradeOffer | undefined = undefined; 
-        // if (tradeOffer) {
-        //   // Perform the tradeOffer action here
-        //   await tradeOffer.performTrade(offerId);
-        // }
+  //       // Optional: Interact with a contract or perform additional logic
+  //       // Declare and define the tradeOffer variable
+  //       // const tradeOffer: TradeOffer | undefined = undefined; 
+  //       // if (tradeOffer) {
+  //       //   // Perform the tradeOffer action here
+  //       //   await tradeOffer.performTrade(offerId);
+  //       // }
 
-        // Sign the transaction
-        const signature = await signer.sign("Hello, World!");
+  //       // Sign the transaction
+  //       const signature = await signer.sign("Hello, World!");
 
-        // Perform any necessary UI updates or display a success message to the user
-      } catch (error) {
-        // Handle errors
-        console.error("Error initiating trade:", error);
-        // Display an error message to the user
-      }
-    },
-    [openOffers, signer]
-  );
+  //       // Perform any necessary UI updates or display a success message to the user
+  //     } catch (error) {
+  //       // Handle errors
+  //       console.error("Error initiating trade:", error);
+  //       // Display an error message to the user
+  //     }
+  //   },
+  //   [openOffers, signer]
+  // );
 
   return (
     <main className="main">
@@ -603,33 +604,26 @@ const App: React.FC = () => {
         {/* Open Offers */}
         <div className="open-offers">
           <h2>Marketplace Offers (List of Open Offers)</h2>
-          {openOffers.length > 0 ? (
+          {querriedOffers.length > 0 ? (
             <ul>
-              {openOffers.map((offer) => (
-                <li key={offer.id}>
-                  <strong>Offer #{offer.id}</strong>
-                  <p>
-                    Tokens Offered: {offer.tokensOffered
-                      .map((token) => `${token.amount} ${token.token}`)
-                      .join(", ")}
-                  </p>
-                  <p>
-                    Tokens Wanted: {offer.tokensWanted
-                      .map((token) => `${token.amount} ${token.token}`)
-                      .join(", ")}
-                  </p>
-                  <p>Status: {offer.status}</p>
-                  <p>Creator: {offer.creator}</p>
-                  <p>Date: {offer.date}</p>
-                  <p>Time: {offer.time}</p>
-                  <button onClick={() => initiateTrade(offer.id)}>TRADE</button>
-                </li>
-              ))}
+              {querriedOffers
+                .filter((offer) => typeof offer === "object" && offer !== null) // Filter out inconsistent elements
+                .map((offer) => (
+                  <li key={offer.id}>
+                    <strong>Offer #{offer.id}</strong>
+                    <p>OfferString: {offer.offerString}</p>
+                    <p>Creator: {offer.offerCrreator}</p>
+                    <p>Date: {offer.date}</p>
+                    <p>Time: {offer.time}</p>
+                    <button onClick={() => handleSubmitOffer()}>TRADE</button>
+                  </li>
+                ))}
             </ul>
           ) : (
             <p>No open offers available.</p>
           )}
         </div>
+
 
         {/* Tokens Offered */}
         <div>
