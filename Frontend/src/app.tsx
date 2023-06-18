@@ -81,7 +81,7 @@ const App: React.FC = () => {
     // Prepare the data to be submitted
     for (let i = 0; i < numberOfOffers; i++) {
       getOfferInfo(i);
-      const newOffer: QuerriedOffer = {
+      let newOffer: QuerriedOffer = {
         id: i + 1,
         offerString: offerString,
         offerCrreator: offerCreator,
@@ -90,7 +90,9 @@ const App: React.FC = () => {
       };
 
       // Update the open offers state
-      setQuerriedOffers([...querriedOffers, newOffer]);
+      setQuerriedOffers(prevState => {
+        return [...prevState, newOffer]
+      });
       console.log(querriedOffers);
       console.log(newOffer);
       
