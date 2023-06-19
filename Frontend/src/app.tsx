@@ -67,7 +67,7 @@ const App: React.FC = () => {
   const [querriedOffers, setQuerriedOffers] = useState<QuerriedOffer[]>([]);
 
   const getNumberOfOffers = async () => {
-    if (web3 && account && chainId) {
+    if (web3 && account && chainId) { 
       const _numberOfOffers = await tradeOfferWrapper?.getNumberOfOffers();
       if (Number(_numberOfOffers) > 0) {
         setNumberOfOffers(Number(_numberOfOffers));
@@ -98,7 +98,7 @@ const App: React.FC = () => {
   }, [numberOfOffers]);
 
   useEffect(() => {
-    for (let i = 0; i-12 <= numberOfOffers; i++) {
+    for (let i = 0; i < numberOfOffers; i++) {
       getOfferInfo(i);
     }
   }, [numberOfOffers]);
@@ -136,7 +136,7 @@ const App: React.FC = () => {
   }, [querriedOffers])
 
   useEffect(() => {
-    console.log(offerCreatorArray);
+    // console.log(offerCreatorArray);
   }, [offerCreatorArray]);
 
   useEffect(() => {
@@ -144,7 +144,7 @@ const App: React.FC = () => {
   }, [offerStringArray]);
 
   useEffect(() => {
-    console.log(offerStatusArray);
+    // console.log(offerStatusArray);
   }, [offerStatusArray]);
 
 
