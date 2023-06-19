@@ -54,7 +54,7 @@ const App: React.FC = () => {
 
   //available Offers data
   const [numberOfOffers, setNumberOfOffers] = useState(0);
-  
+
   const [offerStatus, setOfferStatus] = useState<string>('');
   const [offerString, setOfferString] = useState<string>('');
   const [offerCreator, setOfferCreator] = useState<string>('');
@@ -84,7 +84,7 @@ const App: React.FC = () => {
         await getOfferInfo(i);
         let newOffer: QuerriedOffer = {
           id: i + 1,
-          offerString: offerString,
+          offerString: offerStringArray[i+1],
           offerCrreator: offerCreator,
           date: "",
           time: "",
@@ -98,12 +98,34 @@ const App: React.FC = () => {
   }, [numberOfOffers]);
 
   useEffect(() => {
-    // populate the offer info arrays
-    for (let i = 0; i < numberOfOffers; i++) {
+    for (let i = 0; i-12 <= numberOfOffers; i++) {
       getOfferInfo(i);
-      
     }
-  }, [numberOfOffers])
+  }, [numberOfOffers]);
+
+  useEffect (() =>{
+    setOfferStatusArray((prevState) => {
+      const newOfferStatusArray = [...prevState];
+      newOfferStatusArray.push(String(Boolean(offerStatus)));
+      return newOfferStatusArray;
+    });    
+  },[offerStatus])
+
+  useEffect (() =>{
+    setOfferStringArray((prevState) => {
+      const newOfferStringArray = [...prevState];
+      newOfferStringArray.push(String(offerString));
+      return newOfferStringArray;
+    });    
+  },[offerString])
+
+  useEffect (() =>{
+    setOfferCreatorArray((prevState) => {
+      const newOfferCreatorArray = [...prevState];
+      newOfferCreatorArray.push(String(Boolean(offerCreator)));
+      return newOfferCreatorArray;
+    });    
+  },[offerStatus])
 
   useEffect(() => {
     fetchOfferInfo();
@@ -114,10 +136,17 @@ const App: React.FC = () => {
   }, [querriedOffers])
 
   useEffect(() => {
+    console.log(offerCreatorArray);
+  }, [offerCreatorArray]);
+
+  useEffect(() => {
+    console.log(offerStringArray);
+  }, [offerStringArray]);
+
+  useEffect(() => {
     console.log(offerStatusArray);
-    // console.log(offerString);
-    // console.log(offerCreator);
-  }, [offerString]);
+  }, [offerStatusArray]);
+
 
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
@@ -157,17 +186,16 @@ const App: React.FC = () => {
     try {
       if (web3 && account && chainId) {
         const _offerStatus = await tradeOfferWrapper?.getOfferStatus(offerId);
-        // setOfferStatus(String(Boolean(_offerStatus)));
-
-        const newOfferStatusArray = [...offerStatusArray];
-        newOfferStatusArray[offerId] = String(Boolean(_offerStatus));
-        setOfferStatusArray(newOfferStatusArray);
+        setOfferStatus(String(Boolean(_offerStatus)));
+        // console.log(_offerStatus);
 
         const _offerString = await tradeOfferWrapper?.getOfferString(offerId);
         setOfferString(String(_offerString));
+        // console.log(_offerString);
 
         const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
         setOfferCreator(String(_offerCreator));
+        // console.log(_offerCreator);
       }
     } catch (error) {
       console.error("Error fetching offer info:", error);
@@ -194,6 +222,10 @@ const App: React.FC = () => {
     getTokenAllowance();
     getNumberOfOffers();
   });
+
+  useEffect(() => {
+    console.log(numberOfOffers);
+  }, [numberOfOffers])
 
   // Declare counter states for each button
   const [counterWanted, setCounterWanted] = useState(0);
