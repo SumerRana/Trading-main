@@ -54,12 +54,15 @@ const App: React.FC = () => {
 
   //available Offers data
   const [numberOfOffers, setNumberOfOffers] = useState(0);
-  const [offerStatus, setOfferStatus] = useState("");
-  const [offerString, setOfferString] = useState("");
-  const [offerId, setOfferId] = useState(0);
-  const [offerCreator, setOfferCreator] = useState("")
-
   
+  const [offerStatus, setOfferStatus] = useState<string>('');
+  const [offerString, setOfferString] = useState<string>('');
+  const [offerCreator, setOfferCreator] = useState<string>('');
+  const [offerStringArray, setOfferStringArray] = useState<string[]>([]);
+  const [offerStatusArray, setOfferStatusArray] = useState<string[]>([]);
+  const [offerCreatorArray, setOfferCreatorArray] = useState<string[]>([]);
+
+
   // State for open offers
   const [querriedOffers, setQuerriedOffers] = useState<QuerriedOffer[]>([]);
 
@@ -75,34 +78,46 @@ const App: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    getNumberOfOffers();
-    console.log(numberOfOffers);
-    // Prepare the data to be submitted
-    for (let i = 0; i < numberOfOffers; i++) {
-      getOfferInfo(i);
-      let newOffer: QuerriedOffer = {
-        id: i + 1,
-        offerString: offerString,
-        offerCrreator: offerCreator,
-        date: "",
-        time: ""
-      };
+  const fetchOfferInfo = useCallback(async () => {
+    try {
+      for (let i = 0; i < numberOfOffers; i++) {
+        await getOfferInfo(i);
+        let newOffer: QuerriedOffer = {
+          id: i + 1,
+          offerString: offerString,
+          offerCrreator: offerCreator,
+          date: "",
+          time: "",
+        };
 
-      // Update the open offers state
-      setQuerriedOffers(prevState => {
-        return [...prevState, newOffer]
-      });
-      console.log(querriedOffers);
-      console.log(newOffer);
-      
+        setQuerriedOffers((prevState) => [...prevState, newOffer]);
+      }
+    } catch (error) {
+      console.error("Error fetching offer info:", error);
     }
-
   }, [numberOfOffers]);
 
   useEffect(() => {
-    console.log(querriedOffers);
+    // populate the offer info arrays
+    for (let i = 0; i < numberOfOffers; i++) {
+      getOfferInfo(i);
+      
+    }
+  }, [numberOfOffers])
+
+  useEffect(() => {
+    fetchOfferInfo();
+  }, [fetchOfferInfo]);
+
+  useEffect(() => {
+    // console.log(querriedOffers);
   }, [querriedOffers])
+
+  useEffect(() => {
+    console.log(offerStatusArray);
+    // console.log(offerString);
+    // console.log(offerCreator);
+  }, [offerString]);
 
 
   const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
@@ -139,21 +154,26 @@ const App: React.FC = () => {
   }
 
   const getOfferInfo = async (offerId: number) => {
-    if (web3 && account && chainId) {
-      const _offerStatus = await tradeOfferWrapper?.getOfferStatus(offerId);
-      setOfferStatus(String(Boolean(_offerStatus)));
+    try {
+      if (web3 && account && chainId) {
+        const _offerStatus = await tradeOfferWrapper?.getOfferStatus(offerId);
+        // setOfferStatus(String(Boolean(_offerStatus)));
 
-      const _offerString = await tradeOfferWrapper?.getOfferString(offerId);
-      setOfferString(String(_offerString));
+        const newOfferStatusArray = [...offerStatusArray];
+        newOfferStatusArray[offerId] = String(Boolean(_offerStatus));
+        setOfferStatusArray(newOfferStatusArray);
 
-      const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
-      setOfferCreator(String(_offerCreator));
+        const _offerString = await tradeOfferWrapper?.getOfferString(offerId);
+        setOfferString(String(_offerString));
+
+        const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
+        setOfferCreator(String(_offerCreator));
+      }
+    } catch (error) {
+      console.error("Error fetching offer info:", error);
     }
-    // console.log(offerStatus);
-    // console.log(offerString);
-    // console.log(offerCreator);
+  };
 
-  }
 
 
   const tempTokenAmounts: number[] = new Array(10);
@@ -438,27 +458,27 @@ const App: React.FC = () => {
   const handleApproveWood = () => {
     // if (web3 && account && chainId) {
 
-      if (tokenAmounts[0] > 0) {
-        if (woodAllowance === "0") {
-          setLoading(true);
-          WoodInTheBlockchainLandWrapper
-            ?.approve()
-            .then(() => {
-              setLoading(false);
-              alert(" Wood Approved!");
-              setIsApproved(prevState => {
-                return { ...prevState, WOOD: true }
-              })
+    if (tokenAmounts[0] > 0) {
+      if (woodAllowance === "0") {
+        setLoading(true);
+        WoodInTheBlockchainLandWrapper
+          ?.approve()
+          .then(() => {
+            setLoading(false);
+            alert(" Wood Approved!");
+            setIsApproved(prevState => {
+              return { ...prevState, WOOD: true }
             })
-        }
-        else {
-          alert(" Wood Approved!");
-          setIsApproved(prevState => {
-            return { ...prevState, WOOD: true }
           })
-        }
+      }
+      else {
+        alert(" Wood Approved!");
+        setIsApproved(prevState => {
+          return { ...prevState, WOOD: true }
+        })
       }
     }
+  }
 
   const handleApproveRock = () => {
     if (web3 && account && chainId) {

@@ -105,5 +105,6 @@ button {
 @media (max-width: 720px) {
   .container {
     flex-direction: column-reverse ;
+    margin-left: 5%;
   }
 }
