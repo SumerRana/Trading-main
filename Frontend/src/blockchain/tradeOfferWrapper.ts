@@ -102,10 +102,10 @@ export default class tradeOfferWrapper {
     }
   }
 
-  async getOfferString(_offerId: number): Promise<unknown> {
+  async getOfferStringsArray(): Promise<unknown> {
     try {
-      const OfferString = await this.Contract.call("getOfferString", _offerId);
-      return OfferString;
+      const offerStringsArray = await this.Contract.call("getOfferStringsArray");
+      return offerStringsArray;
     } catch (error) {
       throw error;
     }
@@ -120,19 +120,19 @@ export default class tradeOfferWrapper {
     }
   }
 
-  async getOfferStatus(_offerId: number): Promise<unknown> {
+  async getOfferStatusArray(): Promise<unknown> {
     try {
-      const offerStatus = await this.Contract.call("getOfferStatus", _offerId);
-      return offerStatus;
+      const offerStatusArray = await this.Contract.call("getOfferStatusArray");
+      return offerStatusArray;
     } catch (error) {
       throw error;
     }
   }
 
-  async getOfferCreator(_offerId: number): Promise<unknown> {
+  async getOfferCreatorsArray(): Promise<unknown> {
     try {
-      const offerCreator = await this.Contract.call("getOfferCreator", _offerId);
-      return offerCreator;
+      const offerCreatorsArray = await this.Contract.call("getOfferCreatorsArray");
+      return offerCreatorsArray;
     } catch (error) {
       throw error;
     }

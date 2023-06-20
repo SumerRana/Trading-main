@@ -80,6 +80,7 @@ const App: React.FC = () => {
   useEffect(() => {
     getTokenAllowance();
     getNumberOfOffers();
+    getOfferInfo();
   });
 
   useEffect(() => {
@@ -96,7 +97,7 @@ const App: React.FC = () => {
 
       const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
       setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
-      // console.log(_clayAllowance);
+
       const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
       setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
 
@@ -120,11 +121,10 @@ const App: React.FC = () => {
   const fetchOfferInfo = useCallback(async () => {
     try {
       for (let i = 0; i < numberOfOffers; i++) {
-        await getOfferInfo(i);
         let newOffer: QuerriedOffer = {
           id: i + 1,
-          offerString: offerStringArray[i + 1],
-          offerCrreator: offerCreatorArray[i + 1]
+          offerString: offerStringArray[i],
+          offerCrreator: offerCreatorArray[i]
         };
         // console.log(offerStringArray);
         setQuerriedOffers((prevState) => [...prevState, newOffer]);
@@ -134,18 +134,18 @@ const App: React.FC = () => {
     }
   }, [offersNumber]);
 
-  const getOfferInfo = async (offerId: number) => {
+  const getOfferInfo = async () => {
     try {
       if (web3 && account && chainId) {
-        const _offerStatus = await tradeOfferWrapper?.getOfferStatus(offerId);
-        setOfferStatus(String(Boolean(_offerStatus)));
+        const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
+        setOfferStatus(String(_offerStatus));
         // console.log(_offerStatus);
 
-        const _offerString = await tradeOfferWrapper?.getOfferString(offerId);
+        const _offerString = await tradeOfferWrapper?.getOfferStringsArray();
         setOfferString(String(_offerString));
         // console.log(_offerString);
 
-        const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
+        const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
         setOfferCreator(String(_offerCreator));
         // console.log(_offerCreator);
       }
@@ -341,44 +341,22 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // console.log(offerStringArray.length);    
-    if (offerStringArray.length > numberOfOffers) {
-      setoffersNumber(numberOfOffers);
-      // console.log(offersNumber);
-    }
-  }, [offerStringArray])
-
-  useEffect(() => {
-    for (let i = 0; i < numberOfOffers; i++) {
-      getOfferInfo(i);
-    }
+    getOfferInfo();    
   }, [numberOfOffers]);
 
   useEffect(() => {
-    setOfferStatusArray((prevState) => {
-      const newOfferStatusArray = [...prevState];
-      newOfferStatusArray.push(String(Boolean(offerStatus)));
-      return newOfferStatusArray;
-      console.log(offerCreatorArray);
-    });
+    const newOfferStatusArray = offerStatus.split(",");
+    setOfferStatusArray(newOfferStatusArray);
   }, [offerStatus])
 
   useEffect(() => {
-    if (offerStringArray.length < numberOfOffers + 1) {
-      setOfferStringArray((prevState) => {
-        const newOfferStringArray = [...prevState];
-        newOfferStringArray.push(String(offerString));
-        return newOfferStringArray;
-      });
-    }
+    const newOfferStringArray = offerString.split(",");
+    setOfferStringArray(newOfferStringArray);
   }, [offerString])
 
   useEffect(() => {
-    setOfferCreatorArray((prevState) => {
-      const newOfferCreatorArray = [...prevState];
-      newOfferCreatorArray.push(String(Boolean(offerCreator)));
-      return newOfferCreatorArray;
-    });
+    const newOfferCreatorsArray = offerCreator.split(",");
+    setOfferCreatorArray(newOfferCreatorsArray);
   }, [offerStatus])
 
   useEffect(() => {
@@ -390,15 +368,15 @@ const App: React.FC = () => {
   }, [querriedOffers])
 
   useEffect(() => {
-    // console.log(offerCreatorArray);
+    console.log(offerCreatorArray);
   }, [offerCreatorArray]);
 
   useEffect(() => {
-    // console.log(offerStringArray);
+    console.log(offerStringArray);
   }, [offerStringArray]);
 
   useEffect(() => {
-    // console.log(offerStatusArray);
+    console.log(offerStatusArray);
   }, [offerStatusArray]);
 
   function changeButtonName() {
