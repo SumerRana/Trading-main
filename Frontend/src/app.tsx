@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./app.css";
 import { Web3ModalContext } from "./contexts/Web3ModalProvider";
 import { BlockchainContext } from "./contexts/BlockchainProvider";
@@ -16,34 +16,6 @@ const App: React.FC = () => {
     Web3ModalContext
   );
 
-  //allowance status
-  const [woodAllowance, setWoodAllowance] = useState("");
-  const [rockAllowance, setRockAllowance] = useState("");
-  const [clayAllowance, setClayAllowance] = useState("");
-  const [woolAllowance, setWoolAllowance] = useState("");
-  const [fishAllowance, setFishAllowance] = useState("");
-  const [rockAllowance, setRockAllowance] = useState("");
-  const [woodAllowance, setWoodAllowance] = useState("");
-  const [woolAllowance, setWoolAllowance] = useState("");
-
-  const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
-  const [tokensOfferedData, setTokensOfferedData] = useState(Array(5).fill(undefined));
-  const [tokensWantedData, setTokensWantedData] = useState(Array(5).fill(undefined));
-
-  
-  const [OfferSubmitted, setOfferSubmit] = useState(false);
-
-
-
-  // State for tokens offered and tokens wanted
-  const [tokensOffered, setTokensOffered] = useState([
-    { id: 1, token: "", amount: 0 }
-  ]);
-  const [tokensWanted, setTokensWanted] = useState([
-    { id: 1, token: "", amount: 0 }
-  ]);
-
-
   // add the blockchain context 
   const {
     woodInTheBlockchainLand: WoodInTheBlockchainLandWrapper,
@@ -55,69 +27,152 @@ const App: React.FC = () => {
 
   } = React.useContext(BlockchainContext);
 
-  // State for open offers
-  const [openOffers, setOpenOffers] = useState<Offer[]>([]);
-  // const tokensWantedData = Array(5);
-  // const tokensOfferedData = Array(5);
+  //Loading state
+  const [loading, setLoading] = useState<boolean>(false)
 
-  // edited by developer reEdit by master
-  // const getWoodAllowance = async () => {
-  //   if (web3 && account && chainId && tokenAmounts[0] > 0) {
-  //     const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
-  //     setWoodAllowance(String(Number(_woodAllowance) / 10 ** 18) || "0");
-  //   }
-  // }
-  // const getRockAllowance = async () => {
-  //   if (web3 && account && chainId && tokenAmounts[1] > 0) {
-  //     const _rockAllowance = await RockInTheBlockchainLandWrapper?.allowance();
-  //     setRockAllowance(String(Number(_rockAllowance) / 10 ** 18) || "0");
-  //   }
-  // }
-  // const getClayAllowance = async () => {
-  //   if (web3 && account && chainId && tokenAmounts[2] > 0) {
-  //     const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
-  //     setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
-  //   }
-  // }
-  // const getWoolAllowance = async () => {
-  //   if (web3 && account && chainId && tokenAmounts[3] > 0) {
-  //     const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
-  //     setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
-  //   }
-  // }
-  // const getFishAllowance = async () => {
-  //   if (web3 && account && chainId && tokenAmounts[4] > 0) {
-  //     const _fishAllowance = await FishInTheBlockchainLandWrapper?.allowance();
-  //     setFishAllowance(String(Number(_fishAllowance) / 10 ** 18) || "0");
-  //   }
-  // }
-  
+  //allowance status
+  const [woodAllowance, setWoodAllowance] = useState("");
+  const [rockAllowance, setRockAllowance] = useState("");
+  const [clayAllowance, setClayAllowance] = useState("");
+  const [woolAllowance, setWoolAllowance] = useState("");
+  const [fishAllowance, setFishAllowance] = useState("");
 
-  // useEffect(() => {
-  //   getWoodAllowance();
-  //   getRockAllowance();
-  //   getClayAllowance();
-  //   getWoolAllowance();
-  //   getFishAllowance();
-  // });
+  //available Offers data
+  const [numberOfOffers, setNumberOfOffers] = useState(0);
+  const [offersNumber, setoffersNumber] = useState(0);
+
+  const [offerStatus, setOfferStatus] = useState<string>('');
+  const [offerString, setOfferString] = useState<string>('');
+  const [offerCreator, setOfferCreator] = useState<string>('');
+  const [offerStringArray, setOfferStringArray] = useState<string[]>([]);
+  const [offerStatusArray, setOfferStatusArray] = useState<string[]>([]);
+  const [offerCreatorArray, setOfferCreatorArray] = useState<string[]>([]);
+
+
+  // State for qurried offers
+  const [querriedOffers, setQuerriedOffers] = useState<QuerriedOffer[]>([]);
+
+  const [tokenAmounts, setTokenAmounts] = useState(Array(10).fill(undefined));
+  const [tokensOfferedData, setTokensOfferedData] = useState(Array(5).fill(undefined));
+  const [tokensWantedData, setTokensWantedData] = useState(Array(5).fill(undefined));
+  const [isApproved, setIsApproved] = useState({
+    WOOD: false,
+    ROCK: false,
+    CLAY: false,
+    WOOL: false,
+    FISH: false
+  })
+
+  const [buttonName, setButtonName] = useState("Submit Offer");
+
+  // State for tokens offered and tokens wanted
+  const [tokensOffered, setTokensOffered] = useState([
+    { id: 1, token: "", amount: 0 }
+  ]);
+  const [tokensWanted, setTokensWanted] = useState([
+    { id: 1, token: "", amount: 0 }
+  ]);
+
+  // Declare counter states for each button
+  const [counterWanted, setCounterWanted] = useState(0);
+  const [counterOffered, setCounterOffered] = useState(0);
 
   useEffect(() => {
-    console.log(tokenAmounts);
-  }, [tokenAmounts]);
+    getTokenAllowance();
+    getNumberOfOffers();
+  });
 
+  useEffect(() => {
+    console.log(numberOfOffers);
+  }, [numberOfOffers])
+
+  const getTokenAllowance = async () => {
+    if (web3 && account && chainId) {
+      const _woodAllowance = await WoodInTheBlockchainLandWrapper?.allowance();
+      setWoodAllowance(String(Number(_woodAllowance) / 10 ** 18) || "0");
+
+      const _rockAllowance = await RockInTheBlockchainLandWrapper?.allowance();
+      setRockAllowance(String(Number(_rockAllowance) / 10 ** 18) || "0");
+
+      const _clayAllowance = await CLAYInTheBlockchainLandWrapper?.allowance();
+      setClayAllowance(String(Number(_clayAllowance) / 10 ** 18) || "0");
+      // console.log(_clayAllowance);
+      const _woolAllowance = await WoolInTheBlockchainLandWrapper?.allowance();
+      setWoolAllowance(String(Number(_woolAllowance) / 10 ** 18) || "0");
+
+      const _fishAllowance = await FishInTheBlockchainLandWrapper?.allowance();
+      setFishAllowance(String(Number(_fishAllowance) / 10 ** 18) || "0");
+    }
+  }
+
+  const getNumberOfOffers = async () => {
+    if (web3 && account && chainId) {
+      const _numberOfOffers = await tradeOfferWrapper?.getNumberOfOffers();
+      if (Number(_numberOfOffers) > 0) {
+        setNumberOfOffers(Number(_numberOfOffers));
+      }
+      else {
+        setNumberOfOffers(0);
+      }
+    }
+  }
+
+  const fetchOfferInfo = useCallback(async () => {
+    try {
+      for (let i = 0; i < numberOfOffers; i++) {
+        await getOfferInfo(i);
+        let newOffer: QuerriedOffer = {
+          id: i + 1,
+          offerString: offerStringArray[i + 1],
+          offerCrreator: offerCreatorArray[i + 1]
+        };
+        // console.log(offerStringArray);
+        setQuerriedOffers((prevState) => [...prevState, newOffer]);
+      }
+    } catch (error) {
+      console.error("Error fetching offer info:", error);
+    }
+  }, [offersNumber]);
+
+  const getOfferInfo = async (offerId: number) => {
+    try {
+      if (web3 && account && chainId) {
+        const _offerStatus = await tradeOfferWrapper?.getOfferStatus(offerId);
+        setOfferStatus(String(Boolean(_offerStatus)));
+        // console.log(_offerStatus);
+
+        const _offerString = await tradeOfferWrapper?.getOfferString(offerId);
+        setOfferString(String(_offerString));
+        // console.log(_offerString);
+
+        const _offerCreator = await tradeOfferWrapper?.getOfferCreator(offerId);
+        setOfferCreator(String(_offerCreator));
+        // console.log(_offerCreator);
+      }
+    } catch (error) {
+      console.error("Error fetching offer info:", error);
+    }
+  };
+
+  
   // Function to add a new token to the tokensOffered state
   const handleAddTokenOffered = () => {
-    const newToken = { id: tokensOffered.length + 1, token: "", amount: 0 };
-    setTokensOffered([...tokensOffered, newToken]);
-    // console.log(newToken);
+    if (counterOffered < 4) {
+      const newToken = { id: tokensOffered.length + 1, token: "", amount: 0 };
+      setTokensOffered([...tokensOffered, newToken]);
+      setCounterOffered(counterOffered + 1);
+      console.log(newToken);
+    }
   };
 
   // Function to add a new token to the tokensWanted state
   const handleAddTokenWanted = () => {
-    const newToken = { id: tokensWanted.length + 1, token: "", amount: 0 };
-    setTokensWanted([...tokensWanted, newToken]);
-    // console.log({newToken, tokensWanted});
-    
+    if (counterWanted < 4) {
+      const newToken = { id: tokensWanted.length + 1, token: "", amount: 0 };
+      setTokensWanted([...tokensWanted, newToken]);
+      setCounterWanted(counterWanted + 1);
+      console.log({ newToken, tokensWanted });
+    }
   };
 
 
@@ -131,8 +186,7 @@ const App: React.FC = () => {
       token.id === id ? { ...token, [field]: value } : token
     );
     setTokensOffered(updatedTokens);
-    console.log(updatedTokens);
-    
+
   };
 
 
@@ -160,11 +214,214 @@ const App: React.FC = () => {
       alert("Please fill in all the token wanted fields.");
       return;
     }
+    changeButtonName()
+    createOrderedArray();
 
-    //console.log(tokensOffered)
-    //console.log(tokensWanted)
+  }, [web3, account, tokensOffered, tokensWanted]);
 
-    
+  const handleApproveWood = () => {
+    // if (web3 && account && chainId) {
+
+    if (tokenAmounts[0] > 0) {
+      if (woodAllowance === "0") {
+        setLoading(true);
+        WoodInTheBlockchainLandWrapper
+          ?.approve()
+          .then(() => {
+            setLoading(false);
+            alert(" Wood Approved!");
+            setIsApproved(prevState => {
+              return { ...prevState, WOOD: true }
+            })
+          })
+      }
+      else {
+        alert(" Wood Approved!");
+        setIsApproved(prevState => {
+          return { ...prevState, WOOD: true }
+        })
+      }
+    }
+  }
+
+  const handleApproveRock = () => {
+    if (web3 && account && chainId) {
+      if (tokenAmounts[1] > 0) {
+        if (rockAllowance === "0") {
+          setLoading(true);
+          RockInTheBlockchainLandWrapper
+            ?.approve()
+            .then(() => {
+              setLoading(false);
+              alert("Rock Approved!");
+              setIsApproved(prevState => {
+                return { ...prevState, ROCK: true };
+              });
+            });
+        } else {
+          alert("Rock Approved!");
+          setIsApproved(prevState => {
+            return { ...prevState, ROCK: true };
+          });
+        }
+      }
+    }
+  };
+
+  const handleApproveClay = () => {
+    if (web3 && account && chainId) {
+      if (tokenAmounts[2] > 0) {
+        if (clayAllowance === "0") {
+          setLoading(true);
+          CLAYInTheBlockchainLandWrapper
+            ?.approve()
+            .then(() => {
+              setLoading(false);
+              alert("Clay Approved!");
+              setIsApproved(prevState => {
+                return { ...prevState, CLAY: true };
+              });
+            });
+        } else {
+          alert("Clay Approved!");
+          setIsApproved(prevState => {
+            return { ...prevState, CLAY: true };
+          });
+        }
+      }
+    }
+  };
+
+  const handleApproveWool = () => {
+    if (web3 && account && chainId) {
+      if (tokenAmounts[3] > 0) {
+        if (woolAllowance === "0") {
+          setLoading(true);
+          WoolInTheBlockchainLandWrapper
+            ?.approve()
+            .then(() => {
+              alert("Wool Approved!");
+              setLoading(false);
+              setIsApproved(prevState => {
+                return { ...prevState, WOOL: true };
+              });
+            });
+        } else {
+          alert("Wool Approved!");
+          setIsApproved(prevState => {
+            return { ...prevState, WOOL: true };
+          });
+        }
+      }
+    }
+  };
+
+  const handleApproveFish = () => {
+    if (web3 && account && chainId) {
+      if (tokenAmounts[4] > 0) {
+        if (fishAllowance === "0") {
+          setLoading(true);
+          FishInTheBlockchainLandWrapper
+            ?.approve()
+            .then(() => {
+              setLoading(false);
+              alert("Fish Approved!");
+              setIsApproved(prevState => {
+                return { ...prevState, FISH: true };
+              });
+            });
+        } else {
+          alert("Fish Approved!");
+          setIsApproved(prevState => {
+            return { ...prevState, FISH: true };
+          });
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    // console.log(offerStringArray.length);    
+    if (offerStringArray.length > numberOfOffers) {
+      setoffersNumber(numberOfOffers);
+      // console.log(offersNumber);
+    }
+  }, [offerStringArray])
+
+  useEffect(() => {
+    for (let i = 0; i < numberOfOffers; i++) {
+      getOfferInfo(i);
+    }
+  }, [numberOfOffers]);
+
+  useEffect(() => {
+    setOfferStatusArray((prevState) => {
+      const newOfferStatusArray = [...prevState];
+      newOfferStatusArray.push(String(Boolean(offerStatus)));
+      return newOfferStatusArray;
+      console.log(offerCreatorArray);
+    });
+  }, [offerStatus])
+
+  useEffect(() => {
+    if (offerStringArray.length < numberOfOffers + 1) {
+      setOfferStringArray((prevState) => {
+        const newOfferStringArray = [...prevState];
+        newOfferStringArray.push(String(offerString));
+        return newOfferStringArray;
+      });
+    }
+  }, [offerString])
+
+  useEffect(() => {
+    setOfferCreatorArray((prevState) => {
+      const newOfferCreatorArray = [...prevState];
+      newOfferCreatorArray.push(String(Boolean(offerCreator)));
+      return newOfferCreatorArray;
+    });
+  }, [offerStatus])
+
+  useEffect(() => {
+    fetchOfferInfo();
+  }, [fetchOfferInfo]);
+
+  useEffect(() => {
+    // console.log(querriedOffers);
+  }, [querriedOffers])
+
+  useEffect(() => {
+    // console.log(offerCreatorArray);
+  }, [offerCreatorArray]);
+
+  useEffect(() => {
+    // console.log(offerStringArray);
+  }, [offerStringArray]);
+
+  useEffect(() => {
+    // console.log(offerStatusArray);
+  }, [offerStatusArray]);
+
+  function changeButtonName() {
+
+    for (let i = 0; i < tokensOffered.length; i++) {
+      // console.log(approveStep, tokensOffered.length);
+
+      if (tokensOffered[i].token.length == 0) {
+        return
+      } else if (!isApproved[tokensOffered[i].token] && tokensOffered[i].token.length > 0) {
+        const bName = `Approve ${tokensOffered[i].token}`
+        setButtonName(bName);
+        break;
+      }
+      setButtonName("Create Offer")
+    }
+  }
+
+  useEffect(() => {
+    changeButtonName()
+  }, [isApproved])
+
+  const createOrderedArray = () => {
     // Create an array to store the ordered Offered tokens
 
     const newOfferedData = Array(5).fill(undefined); // Create an array with 5 undefined elements
@@ -204,40 +461,32 @@ const App: React.FC = () => {
       } else if (tokensWanted[i].token === "FISH") {
         newWantedData[4] = tokensWanted[i].amount;
       }
-      // console.log(newWantedData);
     }
 
     setTokensWantedData(newWantedData);
-    console.log(tokensWantedData)
 
     const newTokenAmounts = Array(10).fill(undefined);
 
-    for (let i = 0; i < tokensOfferedData.length; i++) {
-      newTokenAmounts[i] = tokensOfferedData[i]
-      //console.log(tokenAmounts);
+    for (let i = 0; i < newOfferedData.length; i++) {
+      newTokenAmounts[i] = newOfferedData[i]
     }
 
 
-    for (let i = 0; i < tokensWantedData.length; i++) {
-      newTokenAmounts[i + 5] = tokensWantedData[i]
-      //console.log(tokenAmounts);
+    for (let i = 0; i < newWantedData.length; i++) {
+      newTokenAmounts[i + 5] = newWantedData[i]
     }
 
     for (let i = 0; i < 10; i++) {
       if (typeof newTokenAmounts[i] === "undefined") {
         newTokenAmounts[i] = 0;
-        //console.log(tokenAmounts);
       }
     }
     setTokenAmounts(newTokenAmounts);
-    // console.log(newTokenAmounts);
 
-    console.log(tokenAmounts);
-    
+
 
 
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
-    console.log(tokenAmountsTuple);
 
 
   }
@@ -287,11 +536,8 @@ const App: React.FC = () => {
         tokensWantedData[4] = tokensWanted[i].amount;
       }
     }
-    //console.log(tokensWantedData);
-    
 
-    //console.log(tokensOfferedData)
-    //console.log(tokensWantedData)
+
 
     for (let i = 0; i < tokensOfferedData.length; i++) {
       tokenAmounts[i] = tokensOfferedData[i]
@@ -310,7 +556,6 @@ const App: React.FC = () => {
     console.log(tokenAmounts);
 
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
-    //console.log(tokenAmountsTuple);
 
     if (web3 && account && chainId) {
       setLoading(true);
@@ -331,6 +576,7 @@ const App: React.FC = () => {
     // Reset the form after submission
     setTokensOffered([{ id: 1, token: "", amount: 0 }]);
     setTokensWanted([{ id: 1, token: "", amount: 0 }]);
+    setButtonName('Creating Offer')
   }, [web3, account, tokensOffered, tokensWanted, tradeOfferWrapper]);
 
   // Function to connect to XDCPay
@@ -343,90 +589,17 @@ const App: React.FC = () => {
     disconnect();
   }, [disconnect]);
 
-  const handleApproveWood = () => {
-    if (web3 && account && chainId) {
-
-      if (tokenAmounts[0] > 0) {
-        WoodInTheBlockchainLandWrapper
-          ?.approve()
-          .then(() => {
-            alert(" Wood Approved!");
-          })
-          .then(() => {
-            window.location.reload();            
-          })
-      }
-    }
+  function ellipseAddress(address: string = "", width: number = 4): string {
+    return `xdc${address.slice(2, width + 2)}...${address.slice(-width)}`;
   }
 
-  const handleApproveRock = () => {
-    if (web3 && account && chainId) {
-      if (tokenAmounts[1] > 0) {
-        RockInTheBlockchainLandWrapper
-          ?.approve()
-          .then(() => {
-            alert(" Rock Approved!");
-          })
-          .then(() => {
-            window.location.reload();            
-          })
-      }
-    }
-  }
-
-  const handleApproveClay = () => {
-    if (web3 && account && chainId) {
-      if (tokenAmounts[2] > 0) {
-        CLAYInTheBlockchainLandWrapper
-          ?.approve()
-          .then(() => {
-            alert(" Clay Approved!");
-          })
-          .then(() => {
-            window.location.reload();            
-          })
-      }
-    }
-  }
-
-  const handleApproveWool = () => {
-    if (web3 && account && chainId) {
-      if (tokenAmounts[3] > 0) {
-        WoolInTheBlockchainLandWrapper
-          ?.approve()
-          .then(() => {
-            alert(" Wool Approved!");
-          })
-          .then(() => {
-            window.location.reload();            
-          })
-      }
-    }
-  }
-
-  const handleApproveFish = () => {
-    if (web3 && account && chainId) {
-      if (tokenAmounts[4] > 0) {
-        FishInTheBlockchainLandWrapper
-          ?.approve()
-          .then(() => {
-            alert(" Fish Approved!");
-          })
-          .then(() => {
-            window.location.reload();            
-          })
-      }
-      
-
-    }
-  }
 
   // Function to initiate the trade
-  const initiateTrade = useCallback(
-    async (offerId: number) => {
-      try {
-        // Perform the necessary steps to initiate the trade
-        console.log("Initiating trade for offer ID:", offerId);
+  // const initiateTrade = useCallback(
+  //   async (offerId: number) => {
+  //     try {
+  //       // Perform the necessary steps to initiate the trade
+  //       // console.log("Initiating trade for offer ID:", offerId);
 
   //       // Update the offer status to "In Progress" or any other desired value
   //       const updatedOffers = openOffers.map((offer) =>
@@ -445,16 +618,15 @@ const App: React.FC = () => {
   //       // Sign the transaction
   //       const signature = await signer.sign("Hello, World!");
 
-        // Perform any necessary UI updates or display a success message to the user
-        console.log("Trade initiated successfully");
-      } catch (error) {
-        // Handle errors
-        console.error("Error initiating trade:", error);
-        // Display an error message to the user
-      }
-    },
-    [openOffers, signer]
-  );
+  //       // Perform any necessary UI updates or display a success message to the user
+  //     } catch (error) {
+  //       // Handle errors
+  //       console.error("Error initiating trade:", error);
+  //       // Display an error message to the user
+  //     }
+  //   },
+  //   [openOffers, signer]
+  // );
 
   return (
     <main className="main">
@@ -462,7 +634,7 @@ const App: React.FC = () => {
         {!account ? (
           <button className="addbtn connect" onClick={handleConnectXDCPay}>Connect XDCPay</button>
         ) : (
-          <button onClick={handleDisconnectWallet}>Disconnect</button>
+          <button className="addbtn connected" onClick={handleDisconnectWallet}>{ellipseAddress(account)}</button>
         )}
       </div>
       <div className="container">
@@ -549,81 +721,26 @@ const App: React.FC = () => {
             </div>
           ))}
 
-      <button onClick={handleAddTokenWanted}>Add Another</button>
+          <button className="addbtn" onClick={handleAddTokenWanted}>Add Another</button>
 
-      {/* Create Offer button
-      <button id="create-offer" onClick={handleSubmit}>
-        CREATE OFFER TO TRADE
-      </button> */}
-
-      {/* {(tokenAmounts[0] > 0)? (
-        <button id="create-offer" onClick={handleApproveWood}>
-          APPROVE WOOD
-        </button>
-      ) : (
-        <button id="create-offer" onClick={handleSubmit}>
-          CREATE OFFER TO TRADE
-        </button>
-      )} */}
-
-      
-        
-      <button id="create-offer" onClick={
-        // OfferSubmitted === false ? handleSubmitOffer :
-        // tokenAmounts[0] > 0 ? handleApproveWood :
-        // tokenAmounts[1] > 0 ? handleApproveRock :
-        // tokenAmounts[2] > 0 ? handleApproveClay :
-        // tokenAmounts[3] > 0 ? handleApproveWool :
-        // tokenAmounts[4] > 0 ? handleApproveFish :
-        // handleCreateOffer
-        ()=>{
-          console.log(tokenAmounts)
-        }
-        
-      }
-        >
-        {OfferSubmitted === false ? 'Submit Offer' : 
-        tokenAmounts[0] > 0 ? 'APPROVE WOOD' : 
-        tokenAmounts[1] > 0 ? 'APPROVE ROCK' : 
-        tokenAmounts[2] > 0 ? 'APPROVE CLAY' : 
-        tokenAmounts[3] > 0 ? 'APPROVE WOOL' : 
-        tokenAmounts[4] > 0 ? 'APPROVE FISH' : 
-        'CREATE OFFER'}
-      </button>
-
-
-
-
-
-      {/* Open Offers */}
-      <div className="open-offers">
-        <h2>Marketplace Offers (List of Open Offers)</h2>
-        {openOffers.length > 0 ? (
-          <ul>
-            {openOffers.map((offer) => (
-              <li key={offer.id}>
-                <strong>Offer #{offer.id}</strong>
-                <p>
-                  Tokens Offered: {offer.tokensOffered
-                    .map((token) => `${token.amount} ${token.token}`)
-                    .join(", ")}
-                </p>
-                <p>
-                  Tokens Wanted: {offer.tokensWanted
-                    .map((token) => `${token.amount} ${token.token}`)
-                    .join(", ")}
-                </p>
-                <p>Status: {offer.status}</p>
-                <p>Creator: {offer.creator}</p>
-                <p>Date: {offer.date}</p>
-                <p>Time: {offer.time}</p>
-                <button onClick={() => initiateTrade(offer.id)}>TRADE</button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No open offers available.</p>
-        )}
+          <div>
+            {
+              loading ? <HashLoader color="#0ca02c" /> : <button id="create-offer" onClick={() => {
+                buttonName === "Create Offer" ? handleCreateOffer() :
+                  buttonName === 'Submit Offer' ? handleSubmitOffer() :
+                    buttonName === 'Approve WOOD' ? handleApproveWood() :
+                      buttonName === 'Approve ROCK' ? handleApproveRock() :
+                        buttonName === 'Approve CLAY' ? handleApproveClay() :
+                          buttonName === 'Approve WOOL' ? handleApproveWool() :
+                            buttonName === 'Approve FISH' ? handleApproveFish() :
+                              console.log("")
+              }}
+              >
+                {buttonName}
+              </button>
+            }
+          </div>
+        </div>
       </div>
     </main>
   );
