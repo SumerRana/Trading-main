@@ -1,22 +1,22 @@
 {
     "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#b80b0b",
-        "activityBar.background": "#b80b0b",
+        "activityBar.activeBackground": "#4e57b9",
+        "activityBar.background": "#4e57b9",
         "activityBar.foreground": "#e7e7e7",
         "activityBar.inactiveForeground": "#e7e7e799",
-        "activityBarBadge.background": "#0bb40b",
-        "activityBarBadge.foreground": "#e7e7e7",
+        "activityBarBadge.background": "#d28d93",
+        "activityBarBadge.foreground": "#15202b",
         "commandCenter.border": "#e7e7e799",
-        "sash.hoverBorder": "#b80b0b",
-        "statusBar.background": "#880808",
+        "sash.hoverBorder": "#4e57b9",
+        "statusBar.background": "#3c4498",
         "statusBar.foreground": "#e7e7e7",
-        "statusBarItem.hoverBackground": "#b80b0b",
-        "statusBarItem.remoteBackground": "#880808",
+        "statusBarItem.hoverBackground": "#4e57b9",
+        "statusBarItem.remoteBackground": "#3c4498",
         "statusBarItem.remoteForeground": "#e7e7e7",
-        "titleBar.activeBackground": "#880808",
+        "titleBar.activeBackground": "#3c4498",
         "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveBackground": "#88080899",
+        "titleBar.inactiveBackground": "#3c449899",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#880808"
+    "peacock.color": "#3c4498"
 }

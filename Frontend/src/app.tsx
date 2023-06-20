@@ -4,16 +4,6 @@ import { Web3ModalContext } from "./contexts/Web3ModalProvider";
 import { BlockchainContext } from "./contexts/BlockchainProvider";
 import { HashLoader } from "react-spinners";
 
-interface Offer {
-  id: number;
-  tokensOffered: { id: number; token: string; amount: number }[];
-  tokensWanted: { id: number; token: string; amount: number }[];
-  status: string;
-  creator: string | null;
-  date: string; // Date field
-  time: string; // Time field
-}
-
 interface QuerriedOffer {
   id: number;
   offerString: string | null;
@@ -90,8 +80,7 @@ const App: React.FC = () => {
           date: "",
           time: "",
         };
-        console.log(offerStringArray);
-        console.log(offerCreatorArray);
+        // console.log(offerStringArray);
         setQuerriedOffers((prevState) => [...prevState, newOffer]);
       }
     } catch (error) {
@@ -100,10 +89,10 @@ const App: React.FC = () => {
   }, [offersNumber]);
 
   useEffect (() => {
-    console.log(offerStringArray.length);    
+    // console.log(offerStringArray.length);    
     if (offerStringArray.length > numberOfOffers) {
       setoffersNumber(numberOfOffers);
-      console.log(offersNumber);
+      // console.log(offersNumber);
     }
   },[offerStringArray])
 
@@ -118,6 +107,7 @@ const App: React.FC = () => {
       const newOfferStatusArray = [...prevState];
       newOfferStatusArray.push(String(Boolean(offerStatus)));
       return newOfferStatusArray;
+      console.log(offerCreatorArray);
     });    
   },[offerStatus])
 
@@ -152,7 +142,7 @@ const App: React.FC = () => {
   }, [offerCreatorArray]);
 
   useEffect(() => {
-    console.log(offerStringArray);
+    // console.log(offerStringArray);
   }, [offerStringArray]);
 
   useEffect(() => {
@@ -228,7 +218,6 @@ const App: React.FC = () => {
   ]);
 
 
-  const [openOffers, setOpenOffers] = useState<Offer[]>([]);
 
   useEffect(() => {
     getTokenAllowance();
