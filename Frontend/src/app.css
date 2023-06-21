@@ -106,6 +106,25 @@ button {
   transform: scale(1.1);
 }
 
+.acceptbtn {
+  background: #0ca02c;
+}
+
+.cancelbtn {
+  background-color: rgb(197, 33, 33);
+}
+
+.defaultbtn {
+  border-radius: 5px;
+  color: white;
+  transition: all 0.2s linear;
+  cursor: pointer;
+}
+
+.defaultbtn:hover {
+  scale: 1.1;
+}
+
 @media (max-width: 720px) {
   .container {
     flex-direction: column-reverse ;
