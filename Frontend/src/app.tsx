@@ -137,13 +137,13 @@ const App: React.FC = () => {
   const getOfferInfo = async () => {
     try {
       if (web3 && account && chainId) {
-        const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
-        setOfferStatus(String(_offerStatus));
-        // console.log(_offerStatus);
-
         const _offerString = await tradeOfferWrapper?.getOfferStringsArray();
         setOfferString(String(_offerString));
         // console.log(_offerString);
+        
+        const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
+        setOfferStatus(String(_offerStatus));
+        // console.log(_offerStatus);
 
         const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
         setOfferCreator(String(_offerCreator));
