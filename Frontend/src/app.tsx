@@ -42,8 +42,7 @@ const App: React.FC = () => {
   const [offersNumber, setoffersNumber] = useState(0);
 
   const [offerStatus, setOfferStatus] = useState<string>('');
-  const [offerString, setOfferString] = useState<string>('');
-  const [offerCreator, setOfferCreator] = useState<string>('');
+  const [offerStatusTest, setOfferStatusTest] = useState<string>('');
   const [offerStringArray, setOfferStringArray] = useState<string[]>([]);
   const [offerStatusArray, setOfferStatusArray] = useState<string[]>([]);
   const [offerCreatorArray, setOfferCreatorArray] = useState<string[]>([]);
@@ -138,15 +137,20 @@ const App: React.FC = () => {
     try {
       if (web3 && account && chainId) {
         const _offerString = await tradeOfferWrapper?.getOfferStringsArray();
-        setOfferString(String(_offerString));
+        if ((String(_offerString)).split(",").length != offerStringArray.length) {
+          setOfferStringArray((String(_offerString)).split(","));
+        }
         // console.log(_offerString);
-        
+
         const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
+        // setOfferStatusArray((String(_offerStatus)).split(","));
         setOfferStatus(String(_offerStatus));
         // console.log(_offerStatus);
 
         const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
-        setOfferCreator(String(_offerCreator));
+        if ((String(_offerCreator)).split(",").length != offerCreatorArray.length) {
+          setOfferCreatorArray((String(_offerCreator)).split(","));
+        }
         // console.log(_offerCreator);
       }
     } catch (error) {
@@ -345,19 +349,22 @@ const App: React.FC = () => {
   }, [numberOfOffers]);
 
   useEffect(() => {
-    const newOfferStatusArray = offerStatus.split(",");
-    setOfferStatusArray(newOfferStatusArray);
+    if (offerStatus != offerStatusTest) {
+      const newOfferStatusArray = offerStatus.split(",");
+      setOfferStatusArray(newOfferStatusArray);
+      setOfferStatusTest(offerStatus)
+    }
   }, [offerStatus])
 
-  useEffect(() => {
-    const newOfferStringArray = offerString.split(",");
-    setOfferStringArray(newOfferStringArray);
-  }, [offerString])
+  // useEffect(() => {
+  //   const newOfferStringArray = offerString.split(",");
+  //   setOfferStringArray(newOfferStringArray);
+  // }, [offerString])
 
-  useEffect(() => {
-    const newOfferCreatorsArray = offerCreator.split(",");
-    setOfferCreatorArray(newOfferCreatorsArray);
-  }, [offerStatus])
+  // useEffect(() => {
+  //   const newOfferCreatorsArray = offerCreator.split(",");
+  //   setOfferCreatorArray(newOfferCreatorsArray);
+  // }, [offerStatus])
 
   useEffect(() => {
     fetchOfferInfo();
@@ -548,13 +555,16 @@ const App: React.FC = () => {
         })
         .catch((err) => {
           alert(`Error: ${err.message}`);
+        })
+        .then(() => {
+          setLoading(false);
+          window.location.reload();
         });
     }
 
     // Reset the form after submission
     setTokensOffered([{ id: 1, token: "", amount: 0 }]);
     setTokensWanted([{ id: 1, token: "", amount: 0 }]);
-    setButtonName('Creating Offer')
   }, [web3, account, tokensOffered, tokensWanted, tradeOfferWrapper]);
 
   // Function to connect to XDCPay
@@ -570,41 +580,6 @@ const App: React.FC = () => {
   function ellipseAddress(address: string = "", width: number = 4): string {
     return `xdc${address.slice(2, width + 2)}...${address.slice(-width)}`;
   }
-
-
-  // Function to initiate the trade
-  // const initiateTrade = useCallback(
-  //   async (offerId: number) => {
-  //     try {
-  //       // Perform the necessary steps to initiate the trade
-  //       // console.log("Initiating trade for offer ID:", offerId);
-
-  //       // Update the offer status to "In Progress" or any other desired value
-  //       const updatedOffers = openOffers.map((offer) =>
-  //         offer.id === offerId ? { ...offer, status: "In Progress" } : offer
-  //       );
-  //       setOpenOffers(updatedOffers);
-
-  //       // Optional: Interact with a contract or perform additional logic
-  //       // Declare and define the tradeOffer variable
-  //       // const tradeOffer: TradeOffer | undefined = undefined; 
-  //       // if (tradeOffer) {
-  //       //   // Perform the tradeOffer action here
-  //       //   await tradeOffer.performTrade(offerId);
-  //       // }
-
-  //       // Sign the transaction
-  //       const signature = await signer.sign("Hello, World!");
-
-  //       // Perform any necessary UI updates or display a success message to the user
-  //     } catch (error) {
-  //       // Handle errors
-  //       console.error("Error initiating trade:", error);
-  //       // Display an error message to the user
-  //     }
-  //   },
-  //   [openOffers, signer]
-  // );
 
   return (
     <main className="main">
