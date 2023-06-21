@@ -42,7 +42,8 @@ const App: React.FC = () => {
   const [offersNumber, setoffersNumber] = useState(0);
 
   const [offerStatus, setOfferStatus] = useState<string>('');
-  const [offerStatusTest, setOfferStatusTest] = useState<string>('');
+  const [offerString, setOfferString] = useState<string>('');
+  const [offerCreator, setofferCreator] = useState<string>('');
   const [offerStringArray, setOfferStringArray] = useState<string[]>([]);
   const [offerStatusArray, setOfferStatusArray] = useState<string[]>([]);
   const [offerCreatorArray, setOfferCreatorArray] = useState<string[]>([]);
@@ -77,9 +78,17 @@ const App: React.FC = () => {
   const [counterOffered, setCounterOffered] = useState(0);
 
   useEffect(() => {
+    getStatusInfo();
+  });
+  useEffect(() => {
+    getCreatorInfo();
+  });
+  useEffect(() => {
+    getStringInfo();
+  });
+
+  useEffect(() => {
     getTokenAllowance();
-    getNumberOfOffers();
-    getOfferInfo();
   });
 
   useEffect(() => {
@@ -133,23 +142,41 @@ const App: React.FC = () => {
     }
   }, [offersNumber]);
 
-  const getOfferInfo = async () => {
+  const getStringInfo = async () => {
     try {
       if (web3 && account && chainId) {
         const _offerString = await tradeOfferWrapper?.getOfferStringsArray();
-        if ((String(_offerString)).split(",").length != offerStringArray.length) {
-          setOfferStringArray((String(_offerString)).split(","));
+        if (_offerString != offerStatus) {
+          setOfferString(String(_offerString));
         }
         // console.log(_offerString);
+      }
+    } catch (error) {
+      console.error("Error fetching offer info:", error);
+    }
+  };
 
+  const getStatusInfo = async () => {
+    try {
+      if (web3 && account && chainId) {
         const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
         // setOfferStatusArray((String(_offerStatus)).split(","));
-        setOfferStatus(String(_offerStatus));
+        if (_offerStatus != offerStatus) {
+          setOfferStatus(String(_offerStatus));
+        }
         // console.log(_offerStatus);
+      }
+    } catch (error) {
+      console.error("Error fetching offer info:", error);
+    }
+  };
 
+  const getCreatorInfo = async () => {
+    try {
+      if (web3 && account && chainId) {       
         const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
-        if ((String(_offerCreator)).split(",").length != offerCreatorArray.length) {
-          setOfferCreatorArray((String(_offerCreator)).split(","));
+        if (_offerCreator != offerCreator) {
+          setofferCreator(String(_offerCreator));
         }
         // console.log(_offerCreator);
       }
@@ -158,7 +185,7 @@ const App: React.FC = () => {
     }
   };
 
-  
+
   // Function to add a new token to the tokensOffered state
   const handleAddTokenOffered = () => {
     if (counterOffered < 4) {
@@ -344,27 +371,25 @@ const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getOfferInfo();    
-  }, [numberOfOffers]);
+  // useEffect(() => {
+  //   getOfferInfo();
+  // }, [numberOfOffers]);
 
   useEffect(() => {
-    if (offerStatus != offerStatusTest) {
-      const newOfferStatusArray = offerStatus.split(",");
-      setOfferStatusArray(newOfferStatusArray);
-      setOfferStatusTest(offerStatus)
-    }
+    const newOfferStatusArray = offerStatus.split(",");
+    setOfferStatusArray(newOfferStatusArray);
+    // setOfferStatusTest(offerStatus)
   }, [offerStatus])
 
-  // useEffect(() => {
-  //   const newOfferStringArray = offerString.split(",");
-  //   setOfferStringArray(newOfferStringArray);
-  // }, [offerString])
+  useEffect(() => {
+    const newOfferStringArray = offerString.split(",");
+    setOfferStringArray(newOfferStringArray);
+  }, [offerString])
 
-  // useEffect(() => {
-  //   const newOfferCreatorsArray = offerCreator.split(",");
-  //   setOfferCreatorArray(newOfferCreatorsArray);
-  // }, [offerStatus])
+  useEffect(() => {
+    const newOfferCreatorsArray = offerCreator.split(",");
+    setOfferCreatorArray(newOfferCreatorsArray);
+  }, [offerStatus])
 
   useEffect(() => {
     fetchOfferInfo();
