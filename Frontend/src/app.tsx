@@ -8,6 +8,7 @@ interface QuerriedOffer {
   id: number;
   offerString: string | null;
   offerCrreator: string | null;
+  offerStatus: string | null;
 }
 
 const App: React.FC = () => {
@@ -127,20 +128,29 @@ const App: React.FC = () => {
   }
 
   const fetchOfferInfo = useCallback(async () => {
-    try {
-      for (let i = 0; i < numberOfOffers; i++) {
-        let newOffer: QuerriedOffer = {
-          id: i + 1,
-          offerString: offerStringArray[i],
-          offerCrreator: offerCreatorArray[i]
-        };
-        // console.log(offerStringArray);
-        setQuerriedOffers((prevState) => [...prevState, newOffer]);
+    console.log(offerStringArray[0] != undefined)
+    console.log(offerStringArray[0] != "")
+    console.log(offerStringArray[0] != undefined && offerStringArray[0] != "")
+    if (offerStringArray[0] != undefined && offerStringArray[0] != "" && offerStringArray[0] != "undefined") {
+      try {
+        for (let i = 0; i < offerStringArray.length; i++) {
+          if (offerStatusArray[i] != "false") {
+            let newOffer: QuerriedOffer = {
+              id: i + 1,
+              offerString: offerStringArray[i],
+              offerCrreator: offerCreatorArray[i],
+              offerStatus: offerStatusArray[i]
+            };
+            // console.log(offerStringArray);
+            setQuerriedOffers((prevState) => [...prevState, newOffer]);
+            console.log(offerStringArray[i])
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching offer info:", error);
       }
-    } catch (error) {
-      console.error("Error fetching offer info:", error);
     }
-  }, [offersNumber]);
+  }, [offerStringArray]);
 
   const getStringInfo = async () => {
     try {
@@ -173,7 +183,7 @@ const App: React.FC = () => {
 
   const getCreatorInfo = async () => {
     try {
-      if (web3 && account && chainId) {       
+      if (web3 && account && chainId) {
         const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
         if (_offerCreator != offerCreator) {
           setofferCreator(String(_offerCreator));
@@ -628,6 +638,7 @@ const App: React.FC = () => {
                     <strong>Offer Id: {offer.id}</strong>
                     <p>{offer.offerString}</p>
                     <p>Your Offer: {offer.offerCrreator}</p>
+                    <p>Offer Status: {offer.offerStatus}</p>
                     {/* <p>Date: {offer.date}</p>
                     <p>Time: {offer.time}</p> */}
                     <button onClick={() => handleSubmitOffer()}>TRADE</button>
