@@ -80,15 +80,15 @@ const App: React.FC = () => {
 
   //declare marketplace button name array
   const [marketplaceButtonName, setMarketplaceButtonName] = useState<string[]>([]);
-
+  
+  useEffect(() => {
+    getStringInfo();
+  });
   useEffect(() => {
     getStatusInfo();
   });
   useEffect(() => {
     getCreatorInfo();
-  });
-  useEffect(() => {
-    getStringInfo();
   });
 
   useEffect(() => {
@@ -446,11 +446,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     for (let i = 0; i < offerCreatorArray.length; i++) {
-      if (offerCreatorArray[i] === "true") {
-        setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
-      } else {
-        setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
-      }
+      if (offerStatusArray[i] === "true")  
+        {if (offerCreatorArray[i] === "true") {
+          setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
+        } else {
+          setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
+        }}
     }
   }, [offerCreatorArray])
 
