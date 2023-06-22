@@ -80,14 +80,41 @@ const App: React.FC = () => {
 
   //declare marketplace button name array
   const [marketplaceButtonName, setMarketplaceButtonName] = useState<string[]>([]);
-  
+
+  const [undefinedCounter, setUndefinedCounter] = useState(0);
+
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     getStringInfo();
+  //     getStatusInfo();
+  //     getCreatorInfo();
+  //     console.log("run");
+      
+  //   }, 1000);
+
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   if(offerCreatorArray[0] === undefined) {
+  //     if (undefinedCounter === 0) {
+  //       setUndefinedCounter(undefinedCounter + 1);
+  // //     } else {
+  //       window.location.reload();
+  //     }
+  //   }
+  //   console.log(offerCreatorArray[0] === "undefined");
+  //   console.log(offerCreatorArray[0]);
+  //   console.log(undefinedCounter === 0);
+  //   console.log(undefinedCounter);
+
+  // }, [offerCreatorArray])
+
   useEffect(() => {
     getStringInfo();
-  });
-  useEffect(() => {
     getStatusInfo();
-  });
-  useEffect(() => {
     getCreatorInfo();
   });
 
@@ -130,14 +157,32 @@ const App: React.FC = () => {
   //   }
   // }
 
-  const fetchOfferInfo = useCallback(async () => {
-    //console.log(offerStringArray[0] != undefined)
-    //console.log(offerStringArray[0] != "")
-    //console.log(offerStringArray[0] != undefined && offerStringArray[0] != "")
-    if (offerStringArray[0] != undefined && offerStringArray[0] != "" && offerStringArray[0] != "undefined") {
+  useEffect(() => {
+    if (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "") {
+      getStatusInfo();
+      console.log(offerStatusArray[0])
+    }
+  }, [offerStatusArray]);
+
+  useEffect(() => {
+    if (offerStringArray[0] === "undefined" || offerStringArray[0] === "") {
+      getStringInfo();
+      console.log(offerStringArray[0])
+    }
+  }, [offerStatusArray])
+  useEffect(() => {
+    if (offerCreatorArray[0] === "undefined" || offerCreatorArray[0] === "") {
+      getCreatorInfo();
+      console.log(offerCreatorArray[0])
+    }
+  }, [offerCreatorArray])
+
+
+  useEffect(() => {
+    if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
       try {
         for (let i = 0; i < offerStringArray.length; i++) {
-          if (offerStatusArray[i] != "false") {
+          if (offerStatusArray[i] === "true") {
             let newOffer: QuerriedOffer = {
               id: i + 1,
               offerString: offerStringArray[i],
@@ -153,7 +198,13 @@ const App: React.FC = () => {
         console.error("Error fetching offer info:", error);
       }
     }
-  }, [offerStringArray]);
+    // else if ((offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") && (undefinedCounter === 0)) {
+    //   setUndefinedCounter(undefinedCounter + 1);
+    // } else if ((offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") && (undefinedCounter === 1)) {
+    //   window.location.reload();
+    // }
+  }, [offerStatusArray]);
+
 
   const getStringInfo = async () => {
     try {
@@ -174,10 +225,10 @@ const App: React.FC = () => {
       if (web3 && account && chainId) {
         const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
         // setOfferStatusArray((String(_offerStatus)).split(","));
-        if (_offerStatus != offerStatus) {
+        if (String(_offerStatus) != offerStatus) {
           setOfferStatus(String(_offerStatus));
         }
-        console.log(String(_offerStatus));
+        // console.log(String(_offerStatus));
       }
     } catch (error) {
       console.error("Error fetching offer info:", error);
@@ -188,7 +239,7 @@ const App: React.FC = () => {
     try {
       if (web3 && account && chainId) {
         const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
-        if (_offerCreator != offerCreator) {
+        if (String(_offerCreator) != offerCreator) {
           setofferCreator(String(_offerCreator));
         }
         // console.log(_offerCreator);
@@ -197,6 +248,21 @@ const App: React.FC = () => {
       console.error("Error fetching offer info:", error);
     }
   };
+  useEffect(() => {
+    const newOfferStatusArray = offerStatus.split(",");
+    setOfferStatusArray(newOfferStatusArray);
+    // setOfferStatusTest(offerStatus)
+  }, [offerStatus])
+
+  useEffect(() => {
+    const newOfferStringArray = offerString.split(",");
+    setOfferStringArray(newOfferStringArray);
+  }, [offerString])
+
+  useEffect(() => {
+    const newOfferCreatorsArray = offerCreator.split(",");
+    setOfferCreatorArray(newOfferCreatorsArray);
+  }, [offerStatus])
 
 
   // Function to add a new token to the tokensOffered state
@@ -388,25 +454,10 @@ const App: React.FC = () => {
   //   getOfferInfo();
   // }, [numberOfOffers]);
 
-  useEffect(() => {
-    const newOfferStatusArray = offerStatus.split(",");
-    setOfferStatusArray(newOfferStatusArray);
-    // setOfferStatusTest(offerStatus)
-  }, [offerStatus])
 
-  useEffect(() => {
-    const newOfferStringArray = offerString.split(",");
-    setOfferStringArray(newOfferStringArray);
-  }, [offerString])
-
-  useEffect(() => {
-    const newOfferCreatorsArray = offerCreator.split(",");
-    setOfferCreatorArray(newOfferCreatorsArray);
-  }, [offerStatus])
-
-  useEffect(() => {
-    fetchOfferInfo();
-  }, [fetchOfferInfo]);
+  // useEffect(() => {
+  //   fetchOfferInfo();
+  // }, [fetchOfferInfo]);
 
   useEffect(() => {
     // console.log(querriedOffers);
@@ -446,12 +497,13 @@ const App: React.FC = () => {
 
   useEffect(() => {
     for (let i = 0; i < offerCreatorArray.length; i++) {
-      if (offerStatusArray[i] === "true")  
-        {if (offerCreatorArray[i] === "true") {
+      if (offerStatusArray[i] === "true") {
+        if (offerCreatorArray[i] === "true") {
           setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
         } else {
           setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
-        }}
+        }
+      }
     }
   }, [offerCreatorArray])
 
@@ -461,14 +513,14 @@ const App: React.FC = () => {
 
   let counter = 0;
 
-  useEffect(() => {
-    if ((counter === 0) && (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "" || offerStatusArray[0] === undefined )) {
-      counter ++;
-    } else if (counter ===1 && (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "" || offerStatusArray[0] === undefined )) {
-      window.location.reload();
-    }
-    console.log(offerStatusArray[0]);    
-  }, [offerStatusArray])
+  // useEffect(() => {
+  //   if ((counter === 0) && (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "" || offerStatusArray[0] === undefined )) {
+  //     counter ++;
+  //   } else if (counter ===1 && (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "" || offerStatusArray[0] === undefined )) {
+  //     window.location.reload();
+  //   }
+  //   console.log(offerStatusArray[0]);    
+  // }, [offerStatusArray])
 
   const createOrderedArray = () => {
     // Create an array to store the ordered Offered tokens
@@ -628,6 +680,23 @@ const App: React.FC = () => {
 
   }, [web3, account, tokensOffered, tokensWanted, tradeOfferWrapper]);
 
+  const handleCancelOffer = (async (_offerId: number) => {
+    if (web3 && account && chainId) {
+      setLoading(true);
+      tradeOfferWrapper?.withdraw(_offerId)
+        .then(() => {
+          alert("Offer cancelled successfully!");
+        })
+        .then(() => {
+          setLoading(false);
+          window.location.reload();
+        })
+        .catch((err) => {
+          alert(`Error: ${err.message}`);
+        })
+    }
+  });
+
   // Function to connect to XDCPay
   const handleConnectXDCPay = useCallback(() => {
     connect();
@@ -667,7 +736,7 @@ const App: React.FC = () => {
                     <p>Offer Status: {offer?.offerStatus}</p>
                     {/* <p>Date: {offer.date}</p>
                     <p>Time: {offer.time}</p> */}
-                    <button className={`defaultbtn ${marketplaceButtonName[index]=="Accept Offer"? "acceptbtn":"cancelbtn"}`} onClick={() => handleSubmitOffer()}> {marketplaceButtonName[index]}</button>
+                    <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => handleCancelOffer(index)}> {marketplaceButtonName[index]}</button>
                   </li>
                 ))}
             </ul>
