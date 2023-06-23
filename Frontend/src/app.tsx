@@ -89,7 +89,7 @@ const App: React.FC = () => {
   //     getStatusInfo();
   //     getCreatorInfo();
   //     console.log("run");
-      
+
   //   }, 1000);
 
   //   return () => {
@@ -683,7 +683,7 @@ const App: React.FC = () => {
   const handleCancelOffer = (async (_offerId: number) => {
     if (web3 && account && chainId) {
       setLoading(true);
-      tradeOfferWrapper?.withdraw(_offerId)
+      tradeOfferWrapper?.withdraw(_offerId - 1)
         .then(() => {
           alert("Offer cancelled successfully!");
         })
@@ -695,6 +695,26 @@ const App: React.FC = () => {
           alert(`Error: ${err.message}`);
         })
     }
+  });
+  
+  const handleAcceptOffer = (async (_offerId: number) => {
+    // if (web3 && account && chainId) {
+    //   setLoading(true);
+    //   const _offerToAccept = await tradeOfferWrapper?.getOffer(_offerId);
+    //     if (String(_offerToAccept) != _offerToAccept) {
+    //       setofferCreator(String(_offerCreator));
+    //     }
+    //     .then(() => {
+    //       alert("Offer cancelled successfully!");
+    //     })
+    //     .then(() => {
+    //       setLoading(false);
+    //       window.location.reload();
+    //     })
+    //     .catch((err) => {
+    //       alert(`Error: ${err.message}`);
+    //     })
+    // }
   });
 
   // Function to connect to XDCPay
@@ -732,11 +752,28 @@ const App: React.FC = () => {
                   <li key={offer.id}>
                     <strong>Offer Id: {offer?.id}</strong>
                     <p>{offer.offerString}</p>
-                    <p>Your Offer: {offer?.offerCrreator}</p>
-                    <p>Offer Status: {offer?.offerStatus}</p>
+                    {/* <p>Your Offer: {offer?.offerCrreator}</p>
+                    <p>Offer Status: {offer?.offerStatus}</p> */}
                     {/* <p>Date: {offer.date}</p>
                     <p>Time: {offer.time}</p> */}
-                    <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => handleCancelOffer(index)}> {marketplaceButtonName[index]}</button>
+                    {/* <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => handleCancelOffer(offer?.id)}> {`${marketplaceButtonName[index]} ${offer?.id}`}</button> */}
+                    <div>
+                      {
+                        loading ? <HashLoader color="#0ca02c" /> : <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => {
+                          marketplaceButtonName[index] === "Cancel Offer" ? handleCancelOffer(offer?.id) :
+                            marketplaceButtonName[index] === 'Accept Offer' ? handleAcceptOffer(offer?.id) :
+                              marketplaceButtonName[index] === 'Approve WOOD' ? handleApproveWood() :
+                                marketplaceButtonName[index] === 'Approve ROCK' ? handleApproveRock() :
+                                  marketplaceButtonName[index] === 'Approve CLAY' ? handleApproveClay() :
+                                    marketplaceButtonName[index] === 'Approve WOOL' ? handleApproveWool() :
+                                      marketplaceButtonName[index] === 'Approve FISH' ? handleApproveFish() :
+                                        console.log("")
+                        }}
+                        >
+                          {`${marketplaceButtonName[index]} ${offer?.id}`}
+                        </button>
+                      }
+                    </div>
                   </li>
                 ))}
             </ul>
