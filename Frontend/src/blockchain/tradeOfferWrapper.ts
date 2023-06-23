@@ -102,6 +102,15 @@ export default class tradeOfferWrapper {
     }
   }
 
+  async getOfferArrayToAccept(_offerId: number): Promise<unknown> {
+    try {
+      const OfferArrayToAccept = await this.Contract.call("getOfferArrayToAccept", _offerId);
+      return OfferArrayToAccept;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getOfferStringsArray(): Promise<unknown> {
     try {
       const offerStringsArray = await this.Contract.call("getOfferStringsArray");
