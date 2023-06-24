@@ -107,22 +107,39 @@ button {
 }
 
 .acceptbtn {
-  background: #0ca02c;
+  background: #0ca02c !important;
+  transition: all 0.2s linear;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.acceptbtn:hover{
+  scale: 1.1;
+}
+.cancelbtn:hover{
+  scale: 1.1;
 }
 
 .cancelbtn {
-  background-color: rgb(197, 33, 33);
+  background-color: rgb(197, 33, 33) !important;
+  transition: all 0.2s linear;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
 }
 
 .defaultbtn {
-  border-radius: 5px;
   color: white;
-  transition: all 0.2s linear;
-  cursor: pointer;
+  background-color: white;
 }
 
-.defaultbtn:hover {
+/* .defaultbtn:hover {
   scale: 1.1;
+} */
+
+.graybtn {
+  width: 1 px;
 }
 
 @media (max-width: 720px) {

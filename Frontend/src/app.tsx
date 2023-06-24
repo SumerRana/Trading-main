@@ -700,185 +700,189 @@ const App: React.FC = () => {
 
   useEffect(() => {
     console.log(offerToAccept);
-    
+
   }, [offerToAccept])
 
-  const handleAcceptOffer = (async (_offerId: number) => {    
-    if (web3 && account && chainId) {
-      setLoading(true);
-      const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId - 1);
-      console.log(_offerToAccept);
-      console.log(typeof _offerToAccept);
-      if (String(_offerToAccept) != offerToAccept[_offerId - 1]) {
-        // const newOfferToAccept = [...offerToAccept];  // Create a copy of the original array
-        setOfferToAccept((prevArray) => {
-          const newArray = [...prevArray];
-          newArray.splice(_offerId - 1, 0, (String(_offerToAccept)));
-          return newArray;
-        });
+  const handleAcceptOffer = async (_offerId) => {
+    //turn other accept buttons gray
+    var buttons = document.getElementsByClassName('acceptbtn');
 
+    let buttonsToGray = [... marketplaceButtonName];
+    for (var i = 0; i < buttons.length; i++) {
+      var buttonElement = buttons[i] as HTMLButtonElement;
+      buttonElement.disabled = true;
+      if (i !== _offerId - 1) {
+        buttonsToGray[i] = "";
       }
-    //     .then(() => {
-    //     alert("Offer cancelled successfully!");
-    //   })
-    // .then(() => {
-    //   setLoading(false);
-    //   window.location.reload();
-    // })
-    // .catch((err) => {
-    //   alert(`Error: ${err.message}`);
-    // })
-}
-  });
+    }
+    setMarketplaceButtonName(buttonsToGray);
 
-// Function to connect to XDCPay
-const handleConnectXDCPay = useCallback(() => {
-  connect();
-}, [connect]);
+    //get wanted tokens array from smart contract
+    if (web3 && account && chainId) {
+      const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId -1);
+        let offerToAccept = (String(_offerToAccept)).split(",");
+      // console.log(offerToAccept);
 
-// Function to disconnect from the wallet
-const handleDisconnectWallet = useCallback(() => {
-  disconnect();
-}, [disconnect]);
+      //check allowance of tokens
+      if (woodAllowance === "0" && offerToAccept[0] != "0"){
+        
+      }
+    }
+  };
 
-function ellipseAddress(address: string = "", width: number = 4): string {
-  return `xdc${address.slice(2, width + 2)}...${address.slice(-width)}`;
-}
 
-return (
-  <main className="main">
-    <div className="button-container">
-      {!account ? (
-        <button className="addbtn connect" onClick={handleConnectXDCPay}>Connect XDCPay</button>
-      ) : (
-        <button className="addbtn connected" onClick={handleDisconnectWallet}>{ellipseAddress(account)}</button>
-      )}
-    </div>
-    <div className="container">
-      {/* Open Offers */}
-      <div className="open-offers">
-        <h2>Marketplace Offers (List of Open Offers)</h2>
-        {querriedOffers.length > 0 ? (
-          <ul>
-            {querriedOffers
-              .filter((offer) => typeof offer === "object" && offer !== null) // Filter out inconsistent elements
-              .map((offer, index) => (
-                <li key={offer.id}>
-                  <strong>Offer Id: {offer?.id}</strong>
-                  <p>{offer.offerString}</p>
-                  {/* <p>Your Offer: {offer?.offerCrreator}</p>
-                    <p>Offer Status: {offer?.offerStatus}</p> */}
-                  {/* <p>Date: {offer.date}</p>
-                    <p>Time: {offer.time}</p> */}
-                  {/* <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => handleCancelOffer(offer?.id)}> {`${marketplaceButtonName[index]} ${offer?.id}`}</button> */}
-                  <div>
-                    {
-                      loading ? <HashLoader color="#0ca02c" /> : <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => {
-                        marketplaceButtonName[index] === "Cancel Offer" ? handleCancelOffer(offer?.id) :
-                          marketplaceButtonName[index] === 'Accept Offer' ? handleAcceptOffer(offer?.id) :
-                            marketplaceButtonName[index] === 'Approve WOOD' ? handleApproveWood() :
-                              marketplaceButtonName[index] === 'Approve ROCK' ? handleApproveRock() :
-                                marketplaceButtonName[index] === 'Approve CLAY' ? handleApproveClay() :
-                                  marketplaceButtonName[index] === 'Approve WOOL' ? handleApproveWool() :
-                                    marketplaceButtonName[index] === 'Approve FISH' ? handleApproveFish() :
-                                      console.log("")
-                      }}
-                      >
-                        {`${marketplaceButtonName[index]} ${offer?.id}`}
-                      </button>
-                    }
-                  </div>
-                </li>
-              ))}
-          </ul>
+
+  // Function to connect to XDCPay
+  const handleConnectXDCPay = useCallback(() => {
+    connect();
+  }, [connect]);
+
+  // Function to disconnect from the wallet
+  const handleDisconnectWallet = useCallback(() => {
+    disconnect();
+  }, [disconnect]);
+
+  function ellipseAddress(address: string = "", width: number = 4): string {
+    return `xdc${address.slice(2, width + 2)}...${address.slice(-width)}`;
+  }
+
+  return (
+    <main className="main">
+      <div className="button-container">
+        {!account ? (
+          <button className="addbtn connect" onClick={handleConnectXDCPay}>Connect XDCPay</button>
         ) : (
-          <p>No open offers available.</p>
+          <button className="addbtn connected" onClick={handleDisconnectWallet}>{ellipseAddress(account)}</button>
         )}
       </div>
+      <div className="container">
+        {/* Open Offers */}
+        <div className="open-offers">
+          <h2>Marketplace Offers (List of Open Offers)</h2>
+          {querriedOffers.length > 0 ? (
+            <ul>
+              {querriedOffers
+                .filter((offer) => typeof offer === "object" && offer !== null) // Filter out inconsistent elements
+                .map((offer, index) => (
+                  <li key={offer.id}>
+                    <strong>Offer Id: {offer?.id}</strong>
+                    <p>{offer.offerString}</p>
+                    {/* <p>Your Offer: {offer?.offerCrreator}</p>
+                    <p>Offer Status: {offer?.offerStatus}</p> */}
+                    {/* <p>Date: {offer.date}</p>
+                    <p>Time: {offer.time}</p> */}
+                    {/* <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => handleCancelOffer(offer?.id)}> {`${marketplaceButtonName[index]} ${offer?.id}`}</button> */}
+                    <div>
+                      {
+                        loading ? <HashLoader color="#0ca02c" /> :
+                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" :
+                            marketplaceButtonName[index] == "Cancel Offer" ? "cancelbtn" :
+                              "graybtn"}`} onClick={() => {
+                                marketplaceButtonName[index] === "Cancel Offer" ? handleCancelOffer(offer?.id) :
+                                  marketplaceButtonName[index] === 'Accept Offer' ? handleAcceptOffer(offer?.id) :
+                                    marketplaceButtonName[index] === 'Approve WOOD' ? handleApproveWood() :
+                                      marketplaceButtonName[index] === 'Approve ROCK' ? handleApproveRock() :
+                                        marketplaceButtonName[index] === 'Approve CLAY' ? handleApproveClay() :
+                                          marketplaceButtonName[index] === 'Approve WOOL' ? handleApproveWool() :
+                                            marketplaceButtonName[index] === 'Approve FISH' ? handleApproveFish() :
+                                              console.log("")
+                              }}
+                          >
+                            {`${marketplaceButtonName[index]} ${offer?.id}`}
+                          </button>
+                      }
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          ) : (
+            <p>No open offers available.</p>
+          )}
+        </div>
 
 
-      {/* Tokens Offered */}
-      <div>
-        {tokensOffered.map((token) => (
-          <div key={token.id} className="token-wrapper">
-            <h3>Amount</h3>
-            <input
-              type="number"
-              value={token.amount}
-              onChange={(e) =>
-                handleTokenOfferedChange(token.id, "amount", e.target.value)
-              }
-            />
-            <h3>Tokens Offered</h3>
-            <select
-              value={token.token}
-              onChange={(e) =>
-                handleTokenOfferedChange(token.id, "token", e.target.value)
-              }
-            >
-              <option value="">Select Token</option>
-              <option value="WOOD">WOOD</option>
-              <option value="ROCK">ROCK</option>
-              <option value="CLAY">CLAY</option>
-              <option value="WOOL">WOOL</option>
-              <option value="FISH">FISH</option>
-            </select>
-          </div>
-        ))}
-
-        <button className="addbtn" onClick={handleAddTokenOffered}>Add Another</button>
-
-        {/* Tokens Wanted */}
-        {tokensWanted.map((token) => (
-          <div key={token.id} className="token-wrapper">
-            <h3>Amount</h3>
-            <input
-              type="number"
-              value={token.amount}
-              onChange={(e) =>
-                handleTokenWantedChange(token.id, "amount", e.target.value)
-              }
-            />
-            <h3>Tokens Wanted</h3>
-            <select
-              value={token.token}
-              onChange={(e) =>
-                handleTokenWantedChange(token.id, "token", e.target.value)
-              }
-            >
-              <option value="">Select Token</option>
-              <option value="WOOD">WOOD</option>
-              <option value="ROCK">ROCK</option>
-              <option value="CLAY">CLAY</option>
-              <option value="WOOL">WOOL</option>
-              <option value="FISH">FISH</option>
-            </select>
-          </div>
-        ))}
-
-        <button className="addbtn" onClick={handleAddTokenWanted}>Add Another</button>
-
+        {/* Tokens Offered */}
         <div>
-          {
-            loading ? <HashLoader color="#0ca02c" /> : <button id="create-offer" onClick={() => {
-              buttonName === "Create Offer" ? handleCreateOffer() :
-                buttonName === 'Submit Offer' ? handleSubmitOffer() :
-                  buttonName === 'Approve WOOD' ? handleApproveWood() :
-                    buttonName === 'Approve ROCK' ? handleApproveRock() :
-                      buttonName === 'Approve CLAY' ? handleApproveClay() :
-                        buttonName === 'Approve WOOL' ? handleApproveWool() :
-                          buttonName === 'Approve FISH' ? handleApproveFish() :
-                            console.log("")
-            }}
-            >
-              {buttonName}
-            </button>
-          }
+          {tokensOffered.map((token) => (
+            <div key={token.id} className="token-wrapper">
+              <h3>Amount</h3>
+              <input
+                type="number"
+                value={token.amount}
+                onChange={(e) =>
+                  handleTokenOfferedChange(token.id, "amount", e.target.value)
+                }
+              />
+              <h3>Tokens Offered</h3>
+              <select
+                value={token.token}
+                onChange={(e) =>
+                  handleTokenOfferedChange(token.id, "token", e.target.value)
+                }
+              >
+                <option value="">Select Token</option>
+                <option value="WOOD">WOOD</option>
+                <option value="ROCK">ROCK</option>
+                <option value="CLAY">CLAY</option>
+                <option value="WOOL">WOOL</option>
+                <option value="FISH">FISH</option>
+              </select>
+            </div>
+          ))}
+
+          <button className="addbtn" onClick={handleAddTokenOffered}>Add Another</button>
+
+          {/* Tokens Wanted */}
+          {tokensWanted.map((token) => (
+            <div key={token.id} className="token-wrapper">
+              <h3>Amount</h3>
+              <input
+                type="number"
+                value={token.amount}
+                onChange={(e) =>
+                  handleTokenWantedChange(token.id, "amount", e.target.value)
+                }
+              />
+              <h3>Tokens Wanted</h3>
+              <select
+                value={token.token}
+                onChange={(e) =>
+                  handleTokenWantedChange(token.id, "token", e.target.value)
+                }
+              >
+                <option value="">Select Token</option>
+                <option value="WOOD">WOOD</option>
+                <option value="ROCK">ROCK</option>
+                <option value="CLAY">CLAY</option>
+                <option value="WOOL">WOOL</option>
+                <option value="FISH">FISH</option>
+              </select>
+            </div>
+          ))}
+
+          <button className="addbtn" onClick={handleAddTokenWanted}>Add Another</button>
+
+          <div>
+            {
+              loading ? <HashLoader color="#0ca02c" /> : <button id="create-offer" onClick={() => {
+                buttonName === "Create Offer" ? handleCreateOffer() :
+                  buttonName === 'Submit Offer' ? handleSubmitOffer() :
+                    buttonName === 'Approve WOOD' ? handleApproveWood() :
+                      buttonName === 'Approve ROCK' ? handleApproveRock() :
+                        buttonName === 'Approve CLAY' ? handleApproveClay() :
+                          buttonName === 'Approve WOOL' ? handleApproveWool() :
+                            buttonName === 'Approve FISH' ? handleApproveFish() :
+                              console.log("")
+              }}
+              >
+                {buttonName}
+              </button>
+            }
+          </div>
         </div>
       </div>
-    </div>
-  </main>
-);
+    </main>
+  );
 };
 
 export default App;
