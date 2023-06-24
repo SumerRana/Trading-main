@@ -707,7 +707,7 @@ const App: React.FC = () => {
     //turn other accept buttons gray
     var buttons = document.getElementsByClassName('acceptbtn');
 
-    let buttonsToGray = [... marketplaceButtonName];
+    let buttonsToGray = [...marketplaceButtonName];
     for (var i = 0; i < buttons.length; i++) {
       var buttonElement = buttons[i] as HTMLButtonElement;
       buttonElement.disabled = true;
@@ -719,17 +719,71 @@ const App: React.FC = () => {
 
     //get wanted tokens array from smart contract
     if (web3 && account && chainId) {
-      const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId -1);
-        let offerToAccept = (String(_offerToAccept)).split(",");
-      // console.log(offerToAccept);
+      const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId - 1);
+      let offerToAccept = (String(_offerToAccept)).split(",");
+      let marketplaceButtonNameTemp = [...marketplaceButtonName];
+      console.log(marketplaceButtonNameTemp);
+      console.log(woodAllowance === "0");
+      console.log(offerToAccept[0] != "0");
+      console.log(woodAllowance === "0" && offerToAccept[0] != "0");
+      
 
-      //check allowance of tokens
-      if (woodAllowance === "0" && offerToAccept[0] != "0"){
-        
+      for (let i = 0; i < offerToAccept.length; i++) {
+        console.log(marketplaceButtonNameTemp);
+
+        //check allowance of tokens
+        if (woodAllowance === "0" && offerToAccept[0] != "0") {
+          const bName = "Approve Wood";
+          marketplaceButtonNameTemp[_offerId - 1] = bName
+          setMarketplaceButtonName(marketplaceButtonNameTemp);
+          break;
+        }
+        if (rockAllowance === "0" && offerToAccept[1] != "0") {
+          const bName = "Approve Rock";
+          marketplaceButtonNameTemp[_offerId - 1] = bName
+          setMarketplaceButtonName(marketplaceButtonNameTemp);
+          break;
+        }
+        if (clayAllowance === "0" && offerToAccept[2] != "0") {
+          const bName = "Approve Clay";
+          marketplaceButtonNameTemp[_offerId - 1] = bName
+          setMarketplaceButtonName(marketplaceButtonNameTemp);
+          break;
+        }
+        if (woolAllowance === "0" && offerToAccept[3] != "0") {
+          const bName = "Approve Wool";
+          marketplaceButtonNameTemp[_offerId - 1] = bName
+          setMarketplaceButtonName(marketplaceButtonNameTemp);
+          break;
+        }
+        if (fishAllowance === "0" && offerToAccept[4] != "0") {
+          const bName = "Approve Fish";
+          marketplaceButtonNameTemp[_offerId - 1] = bName
+          setMarketplaceButtonName(marketplaceButtonNameTemp);
+          break;
+          console.log(marketplaceButtonNameTemp);
+
+        }
+        console.log(marketplaceButtonNameTemp);
+
       }
     }
+
+    // for (let i = 0; i < tokensOffered.length; i++) {
+    //   if (!isApproved[tokensOffered[i].token] && tokensOffered[i].token.length > 0) {
+    //     const bName = `Approve ${tokensOffered[i].token}`
+    //     setButtonName(bName);
+    //     break;
+    //   }
+    //   setButtonName("Create Offer")
+    // }
+
   };
 
+  const changeMarketplaceButtonName = async (index) => {
+    console.log(`True ${index}`)
+
+  }
 
 
   // Function to connect to XDCPay
@@ -775,7 +829,7 @@ const App: React.FC = () => {
                     <div>
                       {
                         loading ? <HashLoader color="#0ca02c" /> :
-                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" :
+                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" || "Approve Wood" ? "acceptbtn" :
                             marketplaceButtonName[index] == "Cancel Offer" ? "cancelbtn" :
                               "graybtn"}`} onClick={() => {
                                 marketplaceButtonName[index] === "Cancel Offer" ? handleCancelOffer(offer?.id) :
