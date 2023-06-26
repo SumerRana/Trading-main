@@ -84,6 +84,8 @@ const App: React.FC = () => {
 
   const [undefinedCounter, setUndefinedCounter] = useState(0);
 
+  const [currentOfferToAccept, setCurrentOfferToAccept] = useState<string[]>([]);
+
   // useEffect(() => {
   //   const intervalId = setInterval(() => {
   //     getStringInfo();
@@ -121,6 +123,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     getTokenAllowance();
+    getNumberOfOffers();
   });
 
   useEffect(() => {
@@ -146,17 +149,17 @@ const App: React.FC = () => {
     }
   }
 
-  // const getNumberOfOffers = async () => {
-  //   if (web3 && account && chainId) {
-  //     const _numberOfOffers = await tradeOfferWrapper?.getNumberOfOffers();
-  //     if (Number(_numberOfOffers) > 0) {
-  //       setNumberOfOffers(Number(_numberOfOffers));
-  //     }
-  //     else {
-  //       setNumberOfOffers(0);
-  //     }
-  //   }
-  // }
+  const getNumberOfOffers = async () => {
+    if (web3 && account && chainId) {
+      const _numberOfOffers = await tradeOfferWrapper?.getNumberOfOffers();
+      if (Number(_numberOfOffers) > 0) {
+        setNumberOfOffers(Number(_numberOfOffers));
+      }
+      else {
+        setNumberOfOffers(0);
+      }
+    }
+  }
 
   useEffect(() => {
     if (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "") {
@@ -182,6 +185,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
       try {
+        // let counter = 0;
         for (let i = 0; i < offerStringArray.length; i++) {
           if (offerStatusArray[i] === "true") {
             let newOffer: QuerriedOffer = {
@@ -194,16 +198,23 @@ const App: React.FC = () => {
             setQuerriedOffers((prevState) => [...prevState, newOffer]);
             //console.log(offerStringArray[i])
           }
+          counter++;
         }
+        // console.log(counter);
+        // console.log(offerStatusArray[0] === "")
+        // console.log(offerStatusArray[0] === undefined)
+        // console.log(offerStatusArray.length);
+
+
+        // if ((offerStatusArray[0] === "" || offerStatusArray[0] === undefined) && (offerStatusArray.length < 2)) {
+        //   if (counter != numberOfOffers) {
+        //     window.location.reload();
+        //   }
+        // }
       } catch (error) {
         console.error("Error fetching offer info:", error);
       }
     }
-    // else if ((offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") && (undefinedCounter === 0)) {
-    //   setUndefinedCounter(undefinedCounter + 1);
-    // } else if ((offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") && (undefinedCounter === 1)) {
-    //   window.location.reload();
-    // }
   }, [offerStatusArray]);
 
 
@@ -330,11 +341,11 @@ const App: React.FC = () => {
 
   }, [web3, account, tokensOffered, tokensWanted]);
 
-  const handleApproveWood = () => {
+  const handleApproveWood = (flag: boolean) => {
     // if (web3 && account && chainId) {
 
     if (tokenAmounts[0] > 0) {
-      if (woodAllowance === "0") {
+      if (woodAllowance === "0" || flag) {
         setLoading(true);
         WoodInTheBlockchainLandWrapper
           ?.approve()
@@ -355,10 +366,10 @@ const App: React.FC = () => {
     }
   }
 
-  const handleApproveRock = () => {
+  const handleApproveRock = (flag: boolean) => {
     if (web3 && account && chainId) {
       if (tokenAmounts[1] > 0) {
-        if (rockAllowance === "0") {
+        if (rockAllowance === "0" || flag) {
           setLoading(true);
           RockInTheBlockchainLandWrapper
             ?.approve()
@@ -379,9 +390,11 @@ const App: React.FC = () => {
     }
   };
 
-  const handleApproveClay = () => {
+  const handleApproveClay = (flag: boolean) => {
     if (web3 && account && chainId) {
-      if (tokenAmounts[2] > 0) {
+      console.log(offerToAccept);
+
+      if (tokenAmounts[2] > 0 || flag) {
         if (clayAllowance === "0") {
           setLoading(true);
           CLAYInTheBlockchainLandWrapper
@@ -403,10 +416,10 @@ const App: React.FC = () => {
     }
   };
 
-  const handleApproveWool = () => {
+  const handleApproveWool = (flag: boolean) => {
     if (web3 && account && chainId) {
       if (tokenAmounts[3] > 0) {
-        if (woolAllowance === "0") {
+        if (woolAllowance === "0" || flag) {
           setLoading(true);
           WoolInTheBlockchainLandWrapper
             ?.approve()
@@ -427,10 +440,10 @@ const App: React.FC = () => {
     }
   };
 
-  const handleApproveFish = () => {
+  const handleApproveFish = (flag: boolean) => {
     if (web3 && account && chainId) {
       if (tokenAmounts[4] > 0) {
-        if (fishAllowance === "0") {
+        if (fishAllowance === "0" || flag) {
           setLoading(true);
           FishInTheBlockchainLandWrapper
             ?.approve()
@@ -705,14 +718,18 @@ const App: React.FC = () => {
 
   const handleAcceptOffer = async (_offerId) => {
     //turn other accept buttons gray
-    var buttons = document.getElementsByClassName('acceptbtn');
+    var buttons = document.getElementsByClassName('defaultbtn');
 
     let buttonsToGray = [...marketplaceButtonName];
-    for (var i = 0; i < buttons.length; i++) {
-      var buttonElement = buttons[i] as HTMLButtonElement;
-      buttonElement.disabled = true;
-      if (i !== _offerId - 1) {
+    for (var i = 0; i < buttons.length + 1; i++) {
+
+      if (buttonsToGray[i] === "Accept Offer" && i != _offerId - 1) {
+
+        var buttonElement = buttons[i] as HTMLButtonElement;
+        buttonElement.disabled = true;
         buttonsToGray[i] = "";
+        // if (i != _offerId - 1) {
+        // }
       }
     }
     setMarketplaceButtonName(buttonsToGray);
@@ -721,52 +738,14 @@ const App: React.FC = () => {
     if (web3 && account && chainId) {
       const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId - 1);
       let offerToAccept = (String(_offerToAccept)).split(",");
-      let marketplaceButtonNameTemp = [...marketplaceButtonName];
-      console.log(marketplaceButtonNameTemp);
-      console.log(woodAllowance === "0");
-      console.log(offerToAccept[0] != "0");
-      console.log(woodAllowance === "0" && offerToAccept[0] != "0");
-      
+      setCurrentOfferToAccept(offerToAccept);
+      console.log(marketplaceButtonName);
+      console.log(marketplaceButtonName[_offerId - 1]);
 
-      for (let i = 0; i < offerToAccept.length; i++) {
-        console.log(marketplaceButtonNameTemp);
+      changeMarketplaceButtonName(_offerId - 1, buttonsToGray, offerToAccept)
 
-        //check allowance of tokens
-        if (woodAllowance === "0" && offerToAccept[0] != "0") {
-          const bName = "Approve Wood";
-          marketplaceButtonNameTemp[_offerId - 1] = bName
-          setMarketplaceButtonName(marketplaceButtonNameTemp);
-          break;
-        }
-        if (rockAllowance === "0" && offerToAccept[1] != "0") {
-          const bName = "Approve Rock";
-          marketplaceButtonNameTemp[_offerId - 1] = bName
-          setMarketplaceButtonName(marketplaceButtonNameTemp);
-          break;
-        }
-        if (clayAllowance === "0" && offerToAccept[2] != "0") {
-          const bName = "Approve Clay";
-          marketplaceButtonNameTemp[_offerId - 1] = bName
-          setMarketplaceButtonName(marketplaceButtonNameTemp);
-          break;
-        }
-        if (woolAllowance === "0" && offerToAccept[3] != "0") {
-          const bName = "Approve Wool";
-          marketplaceButtonNameTemp[_offerId - 1] = bName
-          setMarketplaceButtonName(marketplaceButtonNameTemp);
-          break;
-        }
-        if (fishAllowance === "0" && offerToAccept[4] != "0") {
-          const bName = "Approve Fish";
-          marketplaceButtonNameTemp[_offerId - 1] = bName
-          setMarketplaceButtonName(marketplaceButtonNameTemp);
-          break;
-          console.log(marketplaceButtonNameTemp);
 
-        }
-        console.log(marketplaceButtonNameTemp);
 
-      }
     }
 
     // for (let i = 0; i < tokensOffered.length; i++) {
@@ -780,8 +759,77 @@ const App: React.FC = () => {
 
   };
 
-  const changeMarketplaceButtonName = async (index) => {
-    console.log(`True ${index}`)
+  const handleTransactAcceptOffer = async (_offerId) => {
+    if (web3 && account && chainId) {
+      setLoading(true);
+      tradeOfferWrapper?.acceptOffer(_offerId - 1)
+        .then(() => {
+          alert("Offer cancelled successfully!");
+        })
+        .then(() => {
+          setLoading(false);
+          window.location.reload();
+        })
+        .catch((err) => {
+          alert(`Error: ${err.message}`);
+        })
+    }
+
+  };
+
+  const changeMarketplaceButtonName = async (index: number, _arrayButtonsName: string[], _offerArray: string[]) => {
+    for (let i = 0; i < offerToAccept.length; i++) {
+
+      let marketplaceButtonNameTemp = [..._arrayButtonsName];
+      let currentOffer = [..._offerArray]
+      console.log(marketplaceButtonNameTemp);
+      console.log(clayAllowance);
+      console.log(clayAllowance === "0");
+      console.log(currentOffer);
+      console.log((currentOffer[0]));
+      console.log((currentOffer[0]) != "0");
+
+
+      //check allowance of tokens
+      if (woodAllowance === "0" && currentOffer[0] != "0") {
+        console.log("running");
+
+        const bName = "Approve WOOD";
+        marketplaceButtonNameTemp[index] = bName
+        setMarketplaceButtonName(marketplaceButtonNameTemp);
+        break;
+      }
+      if (rockAllowance === "0" && currentOffer[1] != "0") {
+        const bName = "Approve ROCK";
+        marketplaceButtonNameTemp[index] = bName
+        setMarketplaceButtonName(marketplaceButtonNameTemp);
+        break;
+      }
+      if (clayAllowance === "0" && currentOffer[2] != "0") {
+        const bName = "Approve CLAY";
+        marketplaceButtonNameTemp[index] = bName
+        setMarketplaceButtonName(marketplaceButtonNameTemp);
+        break;
+      }
+      if (woolAllowance === "0" && currentOffer[3] != "0") {
+        const bName = "Approve WOOL";
+        marketplaceButtonNameTemp[index] = bName
+        setMarketplaceButtonName(marketplaceButtonNameTemp);
+        break;
+      }
+      if (fishAllowance === "0" && currentOffer[4] != "0") {
+        const bName = "Approve FISH";
+        marketplaceButtonNameTemp[index] = bName
+        setMarketplaceButtonName(marketplaceButtonNameTemp);
+        break;
+
+      }
+
+      marketplaceButtonNameTemp[index] = "Transact"
+      setMarketplaceButtonName(marketplaceButtonNameTemp);
+      console.log(marketplaceButtonNameTemp);
+
+    }
 
   }
 
@@ -829,20 +877,29 @@ const App: React.FC = () => {
                     <div>
                       {
                         loading ? <HashLoader color="#0ca02c" /> :
-                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" || "Approve Wood" ? "acceptbtn" :
+                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ||
+                            marketplaceButtonName[index] == "Transact" ||
+                            marketplaceButtonName[index] == "Approve WOOD" ||
+                            marketplaceButtonName[index] == "Approve ROCK" ||
+                            marketplaceButtonName[index] == "Approve CLAY" ||
+                            marketplaceButtonName[index] == "Approve WOOL" ||
+                            marketplaceButtonName[index] == "Approve FISH"
+                            ? "acceptbtn" :
                             marketplaceButtonName[index] == "Cancel Offer" ? "cancelbtn" :
                               "graybtn"}`} onClick={() => {
                                 marketplaceButtonName[index] === "Cancel Offer" ? handleCancelOffer(offer?.id) :
                                   marketplaceButtonName[index] === 'Accept Offer' ? handleAcceptOffer(offer?.id) :
-                                    marketplaceButtonName[index] === 'Approve WOOD' ? handleApproveWood() :
-                                      marketplaceButtonName[index] === 'Approve ROCK' ? handleApproveRock() :
-                                        marketplaceButtonName[index] === 'Approve CLAY' ? handleApproveClay() :
-                                          marketplaceButtonName[index] === 'Approve WOOL' ? handleApproveWool() :
-                                            marketplaceButtonName[index] === 'Approve FISH' ? handleApproveFish() :
-                                              console.log("")
+                                    marketplaceButtonName[index] === "Approve WOOD" ? handleApproveWood(true) :
+                                      marketplaceButtonName[index] === 'Approve ROCK' ? handleApproveRock(true) :
+                                        marketplaceButtonName[index] === 'Approve CLAY' ? handleApproveClay(true) :
+                                          marketplaceButtonName[index] === 'Approve WOOL' ? handleApproveWool(true) :
+                                            marketplaceButtonName[index] === 'Approve FISH' ? handleApproveFish(true) :
+                                              marketplaceButtonName[index] === 'Transact' ? handleTransactAcceptOffer(offer?.id) :
+
+                                                console.log("")
                               }}
                           >
-                            {`${marketplaceButtonName[index]} ${offer?.id}`}
+                            {marketplaceButtonName[index]}
                           </button>
                       }
                     </div>
@@ -921,11 +978,11 @@ const App: React.FC = () => {
               loading ? <HashLoader color="#0ca02c" /> : <button id="create-offer" onClick={() => {
                 buttonName === "Create Offer" ? handleCreateOffer() :
                   buttonName === 'Submit Offer' ? handleSubmitOffer() :
-                    buttonName === 'Approve WOOD' ? handleApproveWood() :
-                      buttonName === 'Approve ROCK' ? handleApproveRock() :
-                        buttonName === 'Approve CLAY' ? handleApproveClay() :
-                          buttonName === 'Approve WOOL' ? handleApproveWool() :
-                            buttonName === 'Approve FISH' ? handleApproveFish() :
+                    buttonName === 'Approve WOOD' ? handleApproveWood(false) :
+                      buttonName === 'Approve ROCK' ? handleApproveRock(false) :
+                        buttonName === 'Approve CLAY' ? handleApproveClay(false) :
+                          buttonName === 'Approve WOOL' ? handleApproveWool(false) :
+                            buttonName === 'Approve FISH' ? handleApproveFish(false) :
                               console.log("")
               }}
               >
