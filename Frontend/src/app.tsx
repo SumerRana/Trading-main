@@ -344,8 +344,8 @@ const App: React.FC = () => {
   const handleApproveWood = (flag: boolean) => {
     // if (web3 && account && chainId) {
 
-    if (tokenAmounts[0] > 0) {
-      if (woodAllowance === "0" || flag) {
+    if (tokenAmounts[0] > 0 || flag) {
+      if (woodAllowance === "0") {
         setLoading(true);
         WoodInTheBlockchainLandWrapper
           ?.approve()
@@ -368,8 +368,8 @@ const App: React.FC = () => {
 
   const handleApproveRock = (flag: boolean) => {
     if (web3 && account && chainId) {
-      if (tokenAmounts[1] > 0) {
-        if (rockAllowance === "0" || flag) {
+      if (tokenAmounts[1] > 0 || flag) {
+        if (rockAllowance === "0") {
           setLoading(true);
           RockInTheBlockchainLandWrapper
             ?.approve()
@@ -418,8 +418,8 @@ const App: React.FC = () => {
 
   const handleApproveWool = (flag: boolean) => {
     if (web3 && account && chainId) {
-      if (tokenAmounts[3] > 0) {
-        if (woolAllowance === "0" || flag) {
+      if (tokenAmounts[3] > 0 || flag) {
+        if (woolAllowance === "0") {
           setLoading(true);
           WoolInTheBlockchainLandWrapper
             ?.approve()
@@ -442,8 +442,8 @@ const App: React.FC = () => {
 
   const handleApproveFish = (flag: boolean) => {
     if (web3 && account && chainId) {
-      if (tokenAmounts[4] > 0) {
-        if (fishAllowance === "0" || flag) {
+      if (tokenAmounts[4] > 0 || flag) {
+        if (fishAllowance === "0") {
           setLoading(true);
           FishInTheBlockchainLandWrapper
             ?.approve()
@@ -706,7 +706,9 @@ const App: React.FC = () => {
           window.location.reload();
         })
         .catch((err) => {
+          setLoading(false);
           alert(`Error: ${err.message}`);
+          window.location.reload();
         })
     }
   });
@@ -777,57 +779,96 @@ const App: React.FC = () => {
 
   };
 
-  const changeMarketplaceButtonName = async (index: number, _arrayButtonsName: string[], _offerArray: string[]) => {
+  const changeMarketplaceButtonName = async (
+    index: number,
+    _arrayButtonsName: string[], _offerArray: string[]) => {
+
+
+    let marketplaceButtonNameTemp = [..._arrayButtonsName];
+    let currentOffer = [..._offerArray]
+
     for (let i = 0; i < offerToAccept.length; i++) {
+      console.log("running");
+      
 
-      let marketplaceButtonNameTemp = [..._arrayButtonsName];
-      let currentOffer = [..._offerArray]
-      console.log(marketplaceButtonNameTemp);
-      console.log(clayAllowance);
-      console.log(clayAllowance === "0");
-      console.log(currentOffer);
-      console.log((currentOffer[0]));
-      console.log((currentOffer[0]) != "0");
-
-
-      //check allowance of tokens
-      if (woodAllowance === "0" && currentOffer[0] != "0") {
-        console.log("running");
-
-        const bName = "Approve WOOD";
+      if (!isApproved["WOOD"] && currentOffer[0] != "0") {
+        const bName = "Approve WOOD"
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (rockAllowance === "0" && currentOffer[1] != "0") {
-        const bName = "Approve ROCK";
+      if (!isApproved["ROCK"] && currentOffer[1] != "0") {
+        const bName = `Approve ROCK`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (clayAllowance === "0" && currentOffer[2] != "0") {
-        const bName = "Approve CLAY";
+      if (!isApproved["CLAY"] && currentOffer[2] != "0") {
+        const bName = `Approve CLAY`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (woolAllowance === "0" && currentOffer[3] != "0") {
-        const bName = "Approve WOOL";
+      if (!isApproved["WOOL"] && currentOffer[3] != "0") {
+        const bName = `Approve WOOL`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (fishAllowance === "0" && currentOffer[4] != "0") {
-        const bName = "Approve FISH";
+      if (!isApproved["FISH"] && currentOffer[4] != "0") {
+        const bName = `Approve FISH`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
-
       }
-
       marketplaceButtonNameTemp[index] = "Transact"
-      setMarketplaceButtonName(marketplaceButtonNameTemp);
-      console.log(marketplaceButtonNameTemp);
+
+      //   console.log(marketplaceButtonNameTemp);
+      //   console.log(clayAllowance);
+      //   console.log(clayAllowance === "0");
+      //   console.log(currentOffer);
+      //   console.log((currentOffer[0]));
+      //   console.log((currentOffer[0]) != "0");
+
+
+      // //check allowance of tokens
+      // if (woodAllowance === "0" && currentOffer[0] != "0") {
+      //   console.log("running");
+
+      //   const bName = "Approve WOOD";
+      //   marketplaceButtonNameTemp[index] = bName
+      //   setMarketplaceButtonName(marketplaceButtonNameTemp);
+      //   break;
+      // }
+      // if (rockAllowance === "0" && currentOffer[1] != "0") {
+      //   const bName = "Approve ROCK";
+      //   marketplaceButtonNameTemp[index] = bName
+      //   setMarketplaceButtonName(marketplaceButtonNameTemp);
+      //   break;
+      // }
+      // if (clayAllowance === "0" && currentOffer[2] != "0") {
+      //   const bName = "Approve CLAY";
+      //   marketplaceButtonNameTemp[index] = bName
+      //   setMarketplaceButtonName(marketplaceButtonNameTemp);
+      //   break;
+      // }
+      // if (woolAllowance === "0" && currentOffer[3] != "0") {
+      //   const bName = "Approve WOOL";
+      //   marketplaceButtonNameTemp[index] = bName
+      //   setMarketplaceButtonName(marketplaceButtonNameTemp);
+      //   break;
+      // }
+      // if (fishAllowance === "0" && currentOffer[4] != "0") {
+      //   const bName = "Approve FISH";
+      //   marketplaceButtonNameTemp[index] = bName
+      //   setMarketplaceButtonName(marketplaceButtonNameTemp);
+      //   break;
+
+      // }
+
+      // marketplaceButtonNameTemp[index] = "Transact"
+      // setMarketplaceButtonName(marketplaceButtonNameTemp);
+      // console.log(marketplaceButtonNameTemp);
 
     }
 
