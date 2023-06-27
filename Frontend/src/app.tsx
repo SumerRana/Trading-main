@@ -518,6 +518,9 @@ const App: React.FC = () => {
           setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
         }
       }
+      // else {
+      //   setMarketplaceButtonName(prevState => [...prevState, '']);
+      // }
     }
   }, [offerCreatorArray])
 
@@ -723,17 +726,33 @@ const App: React.FC = () => {
     var buttons = document.getElementsByClassName('defaultbtn');
 
     let buttonsToGray = [...marketplaceButtonName];
-    for (var i = 0; i < buttons.length + 1; i++) {
+    // console.log(buttons);
+    // console.log(buttons.length);
+    // console.log(buttonsToGray);
+    // console.log(buttonsToGray.length);
+    let counter = 0;
 
-      if (buttonsToGray[i] === "Accept Offer" && i != _offerId - 1) {
+    for (var i = 0; i < (numberOfOffers) + 1; i++) {
+      
+      console.log(offerStatusArray[i] === "true")
+      if (offerStatusArray[i] === "true") {
+        if (buttonsToGray[counter] === "Accept Offer" && i != _offerId - 1) {
 
-        var buttonElement = buttons[i] as HTMLButtonElement;
-        buttonElement.disabled = true;
-        buttonsToGray[i] = "";
-        // if (i != _offerId - 1) {
-        // }
+          var buttonElement = buttons[counter] as HTMLButtonElement;
+          buttonElement.disabled = true;
+          buttonsToGray[counter] = "";
+          // if (i != _offerId - 1) {
+          // }
+        }
+        // console.log(buttonsToGray);
+        // console.log(i);        
+        // console.log(counter);        
+        counter ++;
+      } else {        
+        // console.log(counter);
       }
-    }
+    }    
+    // console.log(buttonsToGray);
     setMarketplaceButtonName(buttonsToGray);
 
     //get wanted tokens array from smart contract
@@ -741,8 +760,9 @@ const App: React.FC = () => {
       const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId - 1);
       let offerToAccept = (String(_offerToAccept)).split(",");
       setCurrentOfferToAccept(offerToAccept);
-      console.log(marketplaceButtonName);
-      console.log(marketplaceButtonName[_offerId - 1]);
+      // console.log(marketplaceButtonName[_offerId - 1]);
+      // console.log(_offerId - 1);
+
 
       changeMarketplaceButtonName(_offerId - 1, buttonsToGray, offerToAccept)
 
@@ -787,35 +807,41 @@ const App: React.FC = () => {
     let marketplaceButtonNameTemp = [..._arrayButtonsName];
     let currentOffer = [..._offerArray]
 
-    for (let i = 0; i < offerToAccept.length; i++) {
-      console.log("running");
-      
+    console.log(marketplaceButtonNameTemp);
+    console.log(currentOffer);
+    console.log(currentOffer.length);
+    console.log(typeof currentOffer);
+    
 
-      if (!isApproved["WOOD"] && currentOffer[0] != "0") {
+    for (let i = 0; i < currentOffer.length; i++) {
+      console.log("running");
+
+
+      if (woodAllowance === "0" && currentOffer[0] != "0") {
         const bName = "Approve WOOD"
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (!isApproved["ROCK"] && currentOffer[1] != "0") {
+      if (rockAllowance === "0" && currentOffer[1] != "0") {
         const bName = `Approve ROCK`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (!isApproved["CLAY"] && currentOffer[2] != "0") {
+      if (clayAllowance === "0" && currentOffer[2] != "0") {
         const bName = `Approve CLAY`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (!isApproved["WOOL"] && currentOffer[3] != "0") {
+      if (woolAllowance === "0" && currentOffer[3] != "0") {
         const bName = `Approve WOOL`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
         break;
       }
-      if (!isApproved["FISH"] && currentOffer[4] != "0") {
+      if (fishAllowance === "0" && currentOffer[4] != "0") {
         const bName = `Approve FISH`
         marketplaceButtonNameTemp[index] = bName
         setMarketplaceButtonName(marketplaceButtonNameTemp);
@@ -867,7 +893,7 @@ const App: React.FC = () => {
       // }
 
       // marketplaceButtonNameTemp[index] = "Transact"
-      // setMarketplaceButtonName(marketplaceButtonNameTemp);
+      setMarketplaceButtonName(marketplaceButtonNameTemp);
       // console.log(marketplaceButtonNameTemp);
 
     }
