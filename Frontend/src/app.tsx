@@ -80,11 +80,13 @@ const App: React.FC = () => {
 
   //declare marketplace button name array
   const [marketplaceButtonName, setMarketplaceButtonName] = useState<string[]>([]);
-  const [offerToAccept, setOfferToAccept] = useState<string[]>([""]);
+  const [offerToAccept, setOfferToAccept] = useState<string[]>([]);
 
   const [undefinedCounter, setUndefinedCounter] = useState(0);
 
   const [currentOfferToAccept, setCurrentOfferToAccept] = useState<string[]>([]);
+
+  const [currentOfferId, setCurrentOfferId] = useState(0);
 
   // useEffect(() => {
   //   const intervalId = setInterval(() => {
@@ -528,6 +530,14 @@ const App: React.FC = () => {
     console.log(marketplaceButtonName)
   }, [marketplaceButtonName])
 
+  // useEffect(() => {
+  //   console.log(offerToAccept);    
+  // }, [offerToAccept])
+
+  useEffect(() => {
+    console.log(currentOfferToAccept);
+  }, [currentOfferToAccept])
+
   let counter = 0;
 
   // useEffect(() => {
@@ -733,8 +743,8 @@ const App: React.FC = () => {
     let counter = 0;
 
     for (var i = 0; i < (numberOfOffers) + 1; i++) {
-      
-      console.log(offerStatusArray[i] === "true")
+
+      // console.log(offerStatusArray[i] === "true")
       if (offerStatusArray[i] === "true") {
         if (buttonsToGray[counter] === "Accept Offer" && i != _offerId - 1) {
 
@@ -747,24 +757,68 @@ const App: React.FC = () => {
         // console.log(buttonsToGray);
         // console.log(i);        
         // console.log(counter);        
-        counter ++;
-      } else {        
+        counter++;
+      } else {
         // console.log(counter);
       }
-    }    
+    }
     // console.log(buttonsToGray);
     setMarketplaceButtonName(buttonsToGray);
+    setCurrentOfferId(_offerId)
 
     //get wanted tokens array from smart contract
     if (web3 && account && chainId) {
-      const _offerToAccept = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId - 1);
-      let offerToAccept = (String(_offerToAccept)).split(",");
-      setCurrentOfferToAccept(offerToAccept);
+      const _offerToAcceptTemp = await tradeOfferWrapper?.getOfferArrayToAccept(_offerId - 1);
+      let offerToAcceptTemp = (String(_offerToAcceptTemp)).split(",");
+      console.log(typeof (String(_offerToAcceptTemp)).split(","));
+      setCurrentOfferToAccept(offerToAcceptTemp)
+      setOfferToAccept(offerToAcceptTemp);
       // console.log(marketplaceButtonName[_offerId - 1]);
-      // console.log(_offerId - 1);
+      console.log(offerToAcceptTemp);
+      console.log(offerToAcceptTemp.length);
 
 
-      changeMarketplaceButtonName(_offerId - 1, buttonsToGray, offerToAccept)
+      // for (let i = 0; i < offerToAcceptTemp.length; i++) {
+      //   console.log("running");
+      //   console.log(!isApproved[i]);
+
+
+      //   if (!isApproved[i] && offerToAcceptTemp[0] != "0") {
+      //     const bName = "Approve WOOD"
+      //     buttonsToGray[_offerId - 1] = bName
+      //     setMarketplaceButtonName(buttonsToGray);
+      //     break;
+      //   }
+      //   if (!isApproved[i] && offerToAcceptTemp[1] != "0") {
+      //     const bName = `Approve ROCK`
+      //     buttonsToGray[_offerId - 1] = bName
+      //     setMarketplaceButtonName(buttonsToGray);
+      //     break;
+      //   }
+      //   if (!isApproved[i] && offerToAcceptTemp[2] != "0") {
+      //     const bName = `Approve CLAY`
+      //     buttonsToGray[_offerId - 1] = bName
+      //     setMarketplaceButtonName(buttonsToGray);
+      //     break;
+      //   }
+      //   if (!isApproved[i] && offerToAcceptTemp[3] != "0") {
+      //     const bName = `Approve WOOL`
+      //     buttonsToGray[_offerId - 1] = bName
+      //     setMarketplaceButtonName(buttonsToGray);
+      //     break;
+      //   }
+      //   if (!isApproved[i] && offerToAcceptTemp[4] != "0") {
+      //     const bName = `Approve FISH`
+      //     buttonsToGray[_offerId - 1] = bName
+      //     setMarketplaceButtonName(buttonsToGray);
+      //     break;
+      //   }
+      //   buttonsToGray[_offerId - 1] = "Transact"
+      //   setMarketplaceButtonName(buttonsToGray);
+      // }
+
+
+      changeMarketplaceButtonName(_offerId - 1)
 
 
 
@@ -801,53 +855,72 @@ const App: React.FC = () => {
 
   const changeMarketplaceButtonName = async (
     index: number,
-    _arrayButtonsName: string[], _offerArray: string[]) => {
+    // _arrayButtonsName: string[], _offerArray: string[]
+  ) => {
 
 
-    let marketplaceButtonNameTemp = [..._arrayButtonsName];
-    let currentOffer = [..._offerArray]
+    // let marketplaceButtonNameTemp = [..._arrayButtonsName];
+    // let currentOffer = [..._offerArray]
 
-    console.log(marketplaceButtonNameTemp);
-    console.log(currentOffer);
-    console.log(currentOffer.length);
-    console.log(typeof currentOffer);
-    
+    let buttonNameArray = [...marketplaceButtonName]
+    let currentOffer = [...currentOfferToAccept]
+    console.log(offerToAccept);
+    console.log(currentOfferToAccept);
 
-    for (let i = 0; i < currentOffer.length; i++) {
+    console.log(buttonNameArray);
+    console.log(currentOfferToAccept);
+    // console.log(currentOffer.length);
+    // console.log(typeof currentOffer);
+    console.log(!isApproved[0]);
+    console.log(!isApproved[1]);
+    console.log(!isApproved[2]);
+    console.log(!isApproved[3]);
+    console.log(!isApproved[4]);
+    // console.log(currentOffer[1] != "0");
+
+
+    // for (let i = 0; i < currentOffer.length; i++) {
       console.log("running");
+      // console.log(!isApproved[i]);
 
 
-      if (woodAllowance === "0" && currentOffer[0] != "0") {
+      if (!isApproved[0] && currentOffer[0] != "0") {
         const bName = "Approve WOOD"
-        marketplaceButtonNameTemp[index] = bName
-        setMarketplaceButtonName(marketplaceButtonNameTemp);
-        break;
+        buttonNameArray[index] = bName
+        setMarketplaceButtonName(buttonNameArray);
+        return;
+        // break;
       }
-      if (rockAllowance === "0" && currentOffer[1] != "0") {
+      if (!isApproved[1] && currentOffer[1] != "0") {
         const bName = `Approve ROCK`
-        marketplaceButtonNameTemp[index] = bName
-        setMarketplaceButtonName(marketplaceButtonNameTemp);
-        break;
+        buttonNameArray[index] = bName
+        setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
       }
-      if (clayAllowance === "0" && currentOffer[2] != "0") {
+      if (!isApproved[2] && currentOffer[2] != "0") {
         const bName = `Approve CLAY`
-        marketplaceButtonNameTemp[index] = bName
-        setMarketplaceButtonName(marketplaceButtonNameTemp);
-        break;
+        buttonNameArray[index] = bName
+        setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
       }
-      if (woolAllowance === "0" && currentOffer[3] != "0") {
+      if (!isApproved[3] && currentOffer[3] != "0") {
         const bName = `Approve WOOL`
-        marketplaceButtonNameTemp[index] = bName
-        setMarketplaceButtonName(marketplaceButtonNameTemp);
-        break;
+        buttonNameArray[index] = bName
+        setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
       }
-      if (fishAllowance === "0" && currentOffer[4] != "0") {
+      if (!isApproved[4] && currentOffer[4] != "0") {
         const bName = `Approve FISH`
-        marketplaceButtonNameTemp[index] = bName
-        setMarketplaceButtonName(marketplaceButtonNameTemp);
-        break;
+        buttonNameArray[index] = bName
+        setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
       }
-      marketplaceButtonNameTemp[index] = "Transact"
+      buttonNameArray[index] = "Transact"
+      setMarketplaceButtonName(buttonNameArray);
 
       //   console.log(marketplaceButtonNameTemp);
       //   console.log(clayAllowance);
@@ -893,12 +966,16 @@ const App: React.FC = () => {
       // }
 
       // marketplaceButtonNameTemp[index] = "Transact"
-      setMarketplaceButtonName(marketplaceButtonNameTemp);
       // console.log(marketplaceButtonNameTemp);
 
-    }
+    // }
 
   }
+
+  useEffect (() => {
+    changeMarketplaceButtonName(currentOfferId)
+    console.log(isApproved);
+  }, [isApproved])
 
 
   // Function to connect to XDCPay
