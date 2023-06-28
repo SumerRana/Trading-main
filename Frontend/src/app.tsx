@@ -90,44 +90,14 @@ const App: React.FC = () => {
   const [marketplaceButtonName, setMarketplaceButtonName] = useState<string[]>([]);
   const [offerToAccept, setOfferToAccept] = useState<string[]>([]);
 
-  const [undefinedCounter, setUndefinedCounter] = useState(0);
-
   const [currentOfferToAccept, setCurrentOfferToAccept] = useState<string[]>([]);
 
   const [currentOfferId, setCurrentOfferId] = useState(0);
 
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     getStringInfo();
-  //     getStatusInfo();
-  //     getCreatorInfo();
-  //     console.log("run");
-
-  //   }, 1000);
-
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if(offerCreatorArray[0] === undefined) {
-  //     if (undefinedCounter === 0) {
-  //       setUndefinedCounter(undefinedCounter + 1);
-  // //     } else {
-  //       window.location.reload();
-  //     }
-  //   }
-  //   console.log(offerCreatorArray[0] === "undefined");
-  //   console.log(offerCreatorArray[0]);
-  //   console.log(undefinedCounter === 0);
-  //   console.log(undefinedCounter);
-
-  // }, [offerCreatorArray])
-
+  
   useEffect(() => {
-    getStringInfo();
     getStatusInfo();
+    getStringInfo();
     getCreatorInfo();
   });
 
@@ -135,10 +105,6 @@ const App: React.FC = () => {
     getTokenAllowance();
     getNumberOfOffers();
   });
-
-  useEffect(() => {
-    //console.log(numberOfOffers);
-  }, [numberOfOffers])
 
   const getTokenAllowance = async () => {
     if (web3 && account && chainId) {
@@ -204,23 +170,10 @@ const App: React.FC = () => {
               offerCrreator: offerCreatorArray[i],
               offerStatus: offerStatusArray[i]
             };
-            // console.log(offerStringArray);
             setQuerriedOffers((prevState) => [...prevState, newOffer]);
-            //console.log(offerStringArray[i])
           }
           counter++;
         }
-        // console.log(counter);
-        // console.log(offerStatusArray[0] === "")
-        // console.log(offerStatusArray[0] === undefined)
-        // console.log(offerStatusArray.length);
-
-
-        // if ((offerStatusArray[0] === "" || offerStatusArray[0] === undefined) && (offerStatusArray.length < 2)) {
-        //   if (counter != numberOfOffers) {
-        //     window.location.reload();
-        //   }
-        // }
       } catch (error) {
         console.error("Error fetching offer info:", error);
       }
@@ -235,7 +188,6 @@ const App: React.FC = () => {
         if (_offerString != offerStatus) {
           setOfferString(String(_offerString));
         }
-        // console.log(_offerString);
       }
     } catch (error) {
       console.error("Error fetching offer info:", error);
@@ -246,11 +198,9 @@ const App: React.FC = () => {
     try {
       if (web3 && account && chainId) {
         const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
-        // setOfferStatusArray((String(_offerStatus)).split(","));
         if (String(_offerStatus) != offerStatus) {
           setOfferStatus(String(_offerStatus));
         }
-        // console.log(String(_offerStatus));
       }
     } catch (error) {
       console.error("Error fetching offer info:", error);
@@ -264,7 +214,6 @@ const App: React.FC = () => {
         if (String(_offerCreator) != offerCreator) {
           setofferCreator(String(_offerCreator));
         }
-        // console.log(_offerCreator);
       }
     } catch (error) {
       console.error("Error fetching offer info:", error);
@@ -293,7 +242,6 @@ const App: React.FC = () => {
       const newToken = { id: tokensOffered.length + 1, token: "", amount: 0 };
       setTokensOffered([...tokensOffered, newToken]);
       setCounterOffered(counterOffered + 1);
-      //console.log(newToken);
     }
   };
 
@@ -303,7 +251,6 @@ const App: React.FC = () => {
       const newToken = { id: tokensWanted.length + 1, token: "", amount: 0 };
       setTokensWanted([...tokensWanted, newToken]);
       setCounterWanted(counterWanted + 1);
-      //console.log({ newToken, tokensWanted });
     }
   };
 
@@ -352,39 +299,38 @@ const App: React.FC = () => {
   }, [web3, account, tokensOffered, tokensWanted]);
 
   const handleApproveWood = (flag: boolean) => {
-    // if (web3 && account && chainId) {
-
-    if (tokenAmounts[0] > 0 || flag) {
-      if (woodAllowance === "0") {
-        setLoading(true);
-        WoodInTheBlockchainLandWrapper
-          ?.approve()
-          .then(() => {
-            setLoading(false);
-            alert(" Wood Approved!");
-            if (!flag) {
-              setIsApproved(prevState => {
-                return { ...prevState, WOOD: true }
-              })
-            }
-            else if (flag) {
-              setApprovalForMarketplace(prevState => {
-                return { ...prevState, WOOD: true }
-              })
-            }
-          })
-      }
-      else {
-        if (!flag) {
-          alert(" Wood Approved!");
-          setIsApproved(prevState => {
-            return { ...prevState, WOOD: true }
-          })
-        }
-        else if (flag) {
-          setApprovalForMarketplace(prevState => {
-            return { ...prevState, WOOD: true }
-          })
+    if (web3 && account && chainId) {
+      if (tokenAmounts[0] > 0 || flag) {
+        if (woodAllowance === "0") {
+          setLoading(true);
+          WoodInTheBlockchainLandWrapper
+            ?.approve()
+            .then(() => {
+              setLoading(false);
+              alert("Wood Approved!");
+              if (!flag) {
+                setIsApproved(prevState => {
+                  return { ...prevState, WOOD: true }
+                })
+              }
+              else if (flag) {
+                setApprovalForMarketplace(prevState => {
+                  return { ...prevState, WOOD: true }
+                })
+              }
+            });
+        } else {
+          alert("Wood Approved!");
+          if (!flag) {
+            setIsApproved(prevState => {
+              return { ...prevState, WOOD: true }
+            })
+          }
+          else if (flag) {
+            setApprovalForMarketplace(prevState => {
+              return { ...prevState, WOOD: true }
+            })
+          }
         }
       }
     }
@@ -544,31 +490,6 @@ const App: React.FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getOfferInfo();
-  // }, [numberOfOffers]);
-
-
-  // useEffect(() => {
-  //   fetchOfferInfo();
-  // }, [fetchOfferInfo]);
-
-  useEffect(() => {
-    // console.log(querriedOffers);
-  }, [querriedOffers])
-
-  useEffect(() => {
-    //console.log(offerCreatorArray);
-  }, [offerCreatorArray]);
-
-  useEffect(() => {
-    //console.log(offerStringArray);
-  }, [offerStringArray]);
-
-  useEffect(() => {
-    //console.log(offerStatusArray);
-  }, [offerStatusArray]);
-
   function changeButtonName() {
 
     for (let i = 0; i < tokensOffered.length; i++) {
@@ -598,9 +519,6 @@ const App: React.FC = () => {
           setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
         }
       }
-      // else {
-      //   setMarketplaceButtonName(prevState => [...prevState, '']);
-      // }
     }
   }, [offerCreatorArray])
 
@@ -608,28 +526,14 @@ const App: React.FC = () => {
     console.log(marketplaceButtonName)
   }, [marketplaceButtonName])
 
-  // useEffect(() => {
-  //   console.log(offerToAccept);    
-  // }, [offerToAccept])
-
   useEffect(() => {
     console.log(currentOfferToAccept);
   }, [currentOfferToAccept])
-
-  // useEffect(() => {
-  //   if ((counter === 0) && (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "" || offerStatusArray[0] === undefined )) {
-  //     counter ++;
-  //   } else if (counter ===1 && (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "" || offerStatusArray[0] === undefined )) {
-  //     window.location.reload();
-  //   }
-  //   console.log(offerStatusArray[0]);    
-  // }, [offerStatusArray])
 
   const createOrderedArray = () => {
     // Create an array to store the ordered Offered tokens
 
     const newOfferedData = Array(5).fill(undefined); // Create an array with 5 undefined elements
-    // console.log(tokensOffered);
 
     for (let i = 0; i < tokensOffered.length; i++) {
       if (tokensOffered[i].token === "WOOD") {
@@ -643,7 +547,6 @@ const App: React.FC = () => {
       } else if (tokensOffered[i].token === "FISH") {
         newOfferedData[4] = tokensOffered[i].amount;
       }
-      // console.log(newOfferedData);
     }
 
     setTokensOfferedData(newOfferedData);
@@ -723,7 +626,6 @@ const App: React.FC = () => {
         tokensOfferedData[4] = tokensOffered[i].amount;
       }
     }
-    //console.log(tokensOfferedData);
 
     // Create an array to store the ordered Wanted tokens
 
@@ -757,7 +659,6 @@ const App: React.FC = () => {
         tokenAmounts[i] = 0;
       }
     }
-    //console.log(tokenAmounts);
 
     const tokenAmountsTuple = tokenAmounts as [number, number, number, number, number, number, number, number, number, number];
 
@@ -812,33 +713,21 @@ const App: React.FC = () => {
     var buttons = document.getElementsByClassName('defaultbtn');
 
     let buttonsToGray = [...marketplaceButtonName];
-    // console.log(buttons);
-    // console.log(buttons.length);
-    // console.log(buttonsToGray);
-    // console.log(buttonsToGray.length);
     let counter = 0;
 
     for (var i = 0; i < (numberOfOffers) + 1; i++) {
 
-      // console.log(offerStatusArray[i] === "true")
       if (offerStatusArray[i] === "true") {
         if (buttonsToGray[counter] === "Accept Offer" && i != _offerId - 1) {
 
           var buttonElement = buttons[counter] as HTMLButtonElement;
           buttonElement.disabled = true;
           buttonsToGray[counter] = "";
-          // if (i != _offerId - 1) {
-          // }
         }
-        // console.log(buttonsToGray);
-        // console.log(i);        
-        // console.log(counter);        
         counter++;
       } else {
-        // console.log(counter);
       }
     }
-    // console.log(buttonsToGray);
     setMarketplaceButtonName(buttonsToGray);
     setCurrentOfferId(_offerId)
 
@@ -849,65 +738,8 @@ const App: React.FC = () => {
       console.log(typeof (String(_offerToAcceptTemp)).split(","));
       setCurrentOfferToAccept(offerToAcceptTemp)
       setOfferToAccept(offerToAcceptTemp);
-      // console.log(marketplaceButtonName[_offerId - 1]);
-      // console.log(offerToAcceptTemp);
-      // console.log(offerToAcceptTemp.length);
-
-      // for (let i = 0; i < offerToAcceptTemp.length; i++) {
-      //   console.log("running");
-      //   console.log(!isApproved[i]);
-
-
-      //   if (!isApproved[i] && offerToAcceptTemp[0] != "0") {
-      //     const bName = "Approve WOOD"
-      //     buttonsToGray[_offerId - 1] = bName
-      //     setMarketplaceButtonName(buttonsToGray);
-      //     break;
-      //   }
-      //   if (!isApproved[i] && offerToAcceptTemp[1] != "0") {
-      //     const bName = `Approve ROCK`
-      //     buttonsToGray[_offerId - 1] = bName
-      //     setMarketplaceButtonName(buttonsToGray);
-      //     break;
-      //   }
-      //   if (!isApproved[i] && offerToAcceptTemp[2] != "0") {
-      //     const bName = `Approve CLAY`
-      //     buttonsToGray[_offerId - 1] = bName
-      //     setMarketplaceButtonName(buttonsToGray);
-      //     break;
-      //   }
-      //   if (!isApproved[i] && offerToAcceptTemp[3] != "0") {
-      //     const bName = `Approve WOOL`
-      //     buttonsToGray[_offerId - 1] = bName
-      //     setMarketplaceButtonName(buttonsToGray);
-      //     break;
-      //   }
-      //   if (!isApproved[i] && offerToAcceptTemp[4] != "0") {
-      //     const bName = `Approve FISH`
-      //     buttonsToGray[_offerId - 1] = bName
-      //     setMarketplaceButtonName(buttonsToGray);
-      //     break;
-      //   }
-      //   buttonsToGray[_offerId - 1] = "Transact"
-      //   setMarketplaceButtonName(buttonsToGray);
-      // }
-
-
       changeMarketplaceButtonName(_offerId, offerToAcceptTemp)
-
-
-
     }
-
-    // for (let i = 0; i < tokensOffered.length; i++) {
-    //   if (!isApproved[tokensOffered[i].token] && tokensOffered[i].token.length > 0) {
-    //     const bName = `Approve ${tokensOffered[i].token}`
-    //     setButtonName(bName);
-    //     break;
-    //   }
-    //   setButtonName("Create Offer")
-    // }
-
   };
 
   const handleTransactAcceptOffer = async (_offerId) => {
@@ -915,7 +747,7 @@ const App: React.FC = () => {
       setLoading(true);
       tradeOfferWrapper?.acceptOffer(_offerId - 1)
         .then(() => {
-          alert("Offer cancelled successfully!");
+          alert("Offer Accepted successfully!");
         })
         .then(() => {
           setLoading(false);
@@ -932,7 +764,7 @@ const App: React.FC = () => {
     index: number, _offerArray: string[]
   ) => {
     console.log(index);
-    
+
 
     if (index > 0) {
       let counter = 1;
@@ -945,74 +777,41 @@ const App: React.FC = () => {
           }
         }
       }
-      console.log(counter);
-
-
-
-      // let marketplaceButtonNameTemp = [..._arrayButtonsName];
-      // let currentOffer = [..._offerArray]
-
       let buttonNameArray = [...marketplaceButtonName]
       let currentOffer = [...currentOfferToAccept]
-      // console.log(offerToAccept);
-      // console.log(currentOfferToAccept); 
-
-      // console.log(index);
-      // console.log(currentOfferToAccept);
-      // console.log(currentOffer.length);
-      // console.log(typeof currentOffer);
-      // console.log(currentOffer[1] != "0");
-
-
-      // for (let i = 0; i < currentOffer.length; i++) {
       console.log(currentOffer);
-      // console.log(!isApproved[i]);
-
-
       if (!ApprovalForMarketplace['WOOD'] && _offerArray[0] != "0") {
         const bName = "Approve WOOD"
         buttonNameArray[counter - 1] = bName
-        // setMarketplaceButtonName(buttonNameArray);
         turnButtonsGray(buttonNameArray);
         return;
-        // break;
       }
       if (!ApprovalForMarketplace["ROCK"] && _offerArray[1] != "0") {
         const bName = `Approve ROCK`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
-        // setMarketplaceButtonName(buttonNameArray);
-        // break;
         return;
       }
       if (!ApprovalForMarketplace['CLAY'] && _offerArray[2] != "0") {
         const bName = `Approve CLAY`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
-        // setMarketplaceButtonName(buttonNameArray);
-        // break;
         return;
       }
       if (!ApprovalForMarketplace['WOOL'] && _offerArray[3] != "0") {
         const bName = `Approve WOOL`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
-        // setMarketplaceButtonName(buttonNameArray);
-        // break;
         return;
       }
       if (!ApprovalForMarketplace['FISH'] && _offerArray[4] != "0") {
         const bName = `Approve FISH`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
-        // setMarketplaceButtonName(buttonNameArray);
-        // break;
         return;
       }
       buttonNameArray[counter - 1] = "Transact"
       turnButtonsGray(buttonNameArray);
-
-      // setMarketplaceButtonName(buttonNameArray);
     }
   }
 
@@ -1070,11 +869,6 @@ const App: React.FC = () => {
                   <li key={offer.id}>
                     <strong>Offer Id: {offer?.id}</strong>
                     <p>{offer.offerString}</p>
-                    {/* <p>Your Offer: {offer?.offerCrreator}</p>
-                    <p>Offer Status: {offer?.offerStatus}</p> */}
-                    {/* <p>Date: {offer.date}</p>
-                    <p>Time: {offer.time}</p> */}
-                    {/* <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ? "acceptbtn" : "cancelbtn"}`} onClick={() => handleCancelOffer(offer?.id)}> {`${marketplaceButtonName[index]} ${offer?.id}`}</button> */}
                     <div>
                       {
                         loading ? <HashLoader color="#0ca02c" /> :
