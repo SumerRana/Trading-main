@@ -40,7 +40,6 @@ const App: React.FC = () => {
 
   //available Offers data
   const [numberOfOffers, setNumberOfOffers] = useState(0);
-  const [offersNumber, setoffersNumber] = useState(0);
 
   const [offerStatus, setOfferStatus] = useState<string>('');
   const [offerString, setOfferString] = useState<string>('');
@@ -94,7 +93,8 @@ const App: React.FC = () => {
 
   const [currentOfferId, setCurrentOfferId] = useState(0);
 
-  
+  const [marketplacePopulated, setMarketplacePopulated] = useState<number>(0);
+
   useEffect(() => {
     getStatusInfo();
     getStringInfo();
@@ -140,42 +140,54 @@ const App: React.FC = () => {
   useEffect(() => {
     if (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "") {
       getStatusInfo();
-      console.log(offerStatusArray[0])
     }
   }, [offerStatusArray]);
 
   useEffect(() => {
     if (offerStringArray[0] === "undefined" || offerStringArray[0] === "") {
       getStringInfo();
-      console.log(offerStringArray[0])
     }
   }, [offerStatusArray])
   useEffect(() => {
     if (offerCreatorArray[0] === "undefined" || offerCreatorArray[0] === "") {
       getCreatorInfo();
-      console.log(offerCreatorArray[0])
     }
   }, [offerCreatorArray])
 
+  useEffect(() => {
+    console.log(marketplacePopulated);
+  }, [marketplacePopulated])
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     // Code to be executed after 1 second
+  //     if (marketplacePopulated < 3) {        
+  //       window.location.reload();
+  //     }
+  //   }, 2000);
+
+  //   return () => clearTimeout(timer); // Clean up the timer on component unmount
+  // }, []);
 
   useEffect(() => {
-    if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
-      try {
-        let counter = 0;
-        for (let i = 0; i < offerStringArray.length; i++) {
-          if (offerStatusArray[i] === "true") {
-            let newOffer: QuerriedOffer = {
-              id: i + 1,
-              offerString: offerStringArray[i],
-              offerCrreator: offerCreatorArray[i],
-              offerStatus: offerStatusArray[i]
-            };
-            setQuerriedOffers((prevState) => [...prevState, newOffer]);
+    if (marketplacePopulated < 3) {
+      if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
+        try {
+          for (let i = 0; i < offerStringArray.length; i++) {
+            if (offerStatusArray[i] === "true") {
+              let newOffer: QuerriedOffer = {
+                id: i + 1,
+                offerString: offerStringArray[i],
+                offerCrreator: offerCreatorArray[i],
+                offerStatus: offerStatusArray[i]
+              };
+              setQuerriedOffers((prevState) => [...prevState, newOffer]);
+            }
           }
-          counter++;
+          setMarketplacePopulated(marketplacePopulated + 1);
+        } catch (error) {
+          console.error("Error fetching offer info:", error);
         }
-      } catch (error) {
-        console.error("Error fetching offer info:", error);
       }
     }
   }, [offerStatusArray]);
@@ -522,14 +534,6 @@ const App: React.FC = () => {
     }
   }, [offerCreatorArray])
 
-  useEffect(() => {
-    console.log(marketplaceButtonName)
-  }, [marketplaceButtonName])
-
-  useEffect(() => {
-    console.log(currentOfferToAccept);
-  }, [currentOfferToAccept])
-
   const createOrderedArray = () => {
     // Create an array to store the ordered Offered tokens
 
@@ -703,11 +707,6 @@ const App: React.FC = () => {
     }
   });
 
-  useEffect(() => {
-    console.log(offerToAccept);
-
-  }, [offerToAccept])
-
   const handleAcceptOffer = async (_offerId) => {
     //turn other accept buttons gray
     var buttons = document.getElementsByClassName('defaultbtn');
@@ -763,8 +762,6 @@ const App: React.FC = () => {
   const changeMarketplaceButtonName = async (
     index: number, _offerArray: string[]
   ) => {
-    console.log(index);
-
 
     if (index > 0) {
       let counter = 1;
@@ -829,8 +826,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     changeMarketplaceButtonName(currentOfferId, currentOfferToAccept);
-    console.log(currentOfferId);
-    console.log(ApprovalForMarketplace);
   }, [ApprovalForMarketplace]);
 
 
