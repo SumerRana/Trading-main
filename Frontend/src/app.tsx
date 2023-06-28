@@ -64,6 +64,14 @@ const App: React.FC = () => {
     FISH: false
   })
 
+  const [ApprovalForMarketplace, setApprovalForMarketplace] = useState({
+    WOOD: false,
+    ROCK: false,
+    CLAY: false,
+    WOOL: false,
+    FISH: false
+  })
+
   const [buttonName, setButtonName] = useState("Submit Offer");
 
   // State for tokens offered and tokens wanted
@@ -354,16 +362,30 @@ const App: React.FC = () => {
           .then(() => {
             setLoading(false);
             alert(" Wood Approved!");
-            setIsApproved(prevState => {
-              return { ...prevState, WOOD: true }
-            })
+            if (!flag) {
+              setIsApproved(prevState => {
+                return { ...prevState, WOOD: true }
+              })
+            }
+            else if (flag) {
+              setApprovalForMarketplace(prevState => {
+                return { ...prevState, WOOD: true }
+              })
+            }
           })
       }
       else {
-        alert(" Wood Approved!");
-        setIsApproved(prevState => {
-          return { ...prevState, WOOD: true }
-        })
+        if (!flag) {
+          alert(" Wood Approved!");
+          setIsApproved(prevState => {
+            return { ...prevState, WOOD: true }
+          })
+        }
+        else if (flag) {
+          setApprovalForMarketplace(prevState => {
+            return { ...prevState, WOOD: true }
+          })
+        }
       }
     }
   }
@@ -378,15 +400,29 @@ const App: React.FC = () => {
             .then(() => {
               setLoading(false);
               alert("Rock Approved!");
-              setIsApproved(prevState => {
-                return { ...prevState, ROCK: true };
-              });
+              if (!flag) {
+                setIsApproved(prevState => {
+                  return { ...prevState, ROCK: true }
+                })
+              }
+              else if (flag) {
+                setApprovalForMarketplace(prevState => {
+                  return { ...prevState, ROCK: true }
+                })
+              }
             });
         } else {
           alert("Rock Approved!");
-          setIsApproved(prevState => {
-            return { ...prevState, ROCK: true };
-          });
+          if (!flag) {
+            setIsApproved(prevState => {
+              return { ...prevState, ROCK: true }
+            })
+          }
+          else if (flag) {
+            setApprovalForMarketplace(prevState => {
+              return { ...prevState, ROCK: true }
+            })
+          }
         }
       }
     }
@@ -404,15 +440,29 @@ const App: React.FC = () => {
             .then(() => {
               setLoading(false);
               alert("Clay Approved!");
-              setIsApproved(prevState => {
-                return { ...prevState, CLAY: true };
-              });
+              if (!flag) {
+                setIsApproved(prevState => {
+                  return { ...prevState, CLAY: true }
+                })
+              }
+              else if (flag) {
+                setApprovalForMarketplace(prevState => {
+                  return { ...prevState, CLAY: true }
+                })
+              }
             });
         } else {
           alert("Clay Approved!");
-          setIsApproved(prevState => {
-            return { ...prevState, CLAY: true };
-          });
+          if (!flag) {
+            setIsApproved(prevState => {
+              return { ...prevState, CLAY: true }
+            })
+          }
+          else if (flag) {
+            setApprovalForMarketplace(prevState => {
+              return { ...prevState, CLAY: true }
+            })
+          }
         }
       }
     }
@@ -428,15 +478,29 @@ const App: React.FC = () => {
             .then(() => {
               alert("Wool Approved!");
               setLoading(false);
-              setIsApproved(prevState => {
-                return { ...prevState, WOOL: true };
-              });
+              if (!flag) {
+                setIsApproved(prevState => {
+                  return { ...prevState, WOOL: true }
+                })
+              }
+              else if (flag) {
+                setApprovalForMarketplace(prevState => {
+                  return { ...prevState, WOOL: true }
+                })
+              }
             });
         } else {
           alert("Wool Approved!");
-          setIsApproved(prevState => {
-            return { ...prevState, WOOL: true };
-          });
+          if (!flag) {
+            setIsApproved(prevState => {
+              return { ...prevState, WOOL: true }
+            })
+          }
+          else if (flag) {
+            setApprovalForMarketplace(prevState => {
+              return { ...prevState, WOOL: true }
+            })
+          }
         }
       }
     }
@@ -452,15 +516,29 @@ const App: React.FC = () => {
             .then(() => {
               setLoading(false);
               alert("Fish Approved!");
-              setIsApproved(prevState => {
-                return { ...prevState, FISH: true };
-              });
+              if (!flag) {
+                setIsApproved(prevState => {
+                  return { ...prevState, FISH: true }
+                })
+              }
+              else if (flag) {
+                setApprovalForMarketplace(prevState => {
+                  return { ...prevState, FISH: true }
+                })
+              }
             });
         } else {
           alert("Fish Approved!");
-          setIsApproved(prevState => {
-            return { ...prevState, FISH: true };
-          });
+          if (!flag) {
+            setIsApproved(prevState => {
+              return { ...prevState, FISH: true }
+            })
+          }
+          else if (flag) {
+            setApprovalForMarketplace(prevState => {
+              return { ...prevState, FISH: true }
+            })
+          }
         }
       }
     }
@@ -815,7 +893,7 @@ const App: React.FC = () => {
       // }
 
 
-      changeMarketplaceButtonName(_offerId - 1)
+      changeMarketplaceButtonName(_offerId)
 
 
 
@@ -876,42 +954,42 @@ const App: React.FC = () => {
     // console.log(!isApproved[i]);
 
 
-    if (!isApproved['WOOD'] && currentOffer[0] != "0") {
+    if (!ApprovalForMarketplace['WOOD'] && currentOffer[0] != "0") {
       const bName = "Approve WOOD"
-      buttonNameArray[index] = bName
+      buttonNameArray[index - 1] = bName
       setMarketplaceButtonName(buttonNameArray);
       return;
       // break;
     }
-    if (!isApproved["ROCK"] && currentOffer[1] != "0") {
+    if (!ApprovalForMarketplace["ROCK"] && currentOffer[1] != "0") {
       const bName = `Approve ROCK`
-      buttonNameArray[index] = bName
+      buttonNameArray[index - 1] = bName
       setMarketplaceButtonName(buttonNameArray);
       // break;
       return;
     }
-    if (!isApproved['CLAY'] && currentOffer[2] != "0") {
+    if (!ApprovalForMarketplace['CLAY'] && currentOffer[2] != "0") {
       const bName = `Approve CLAY`
-      buttonNameArray[index] = bName
+      buttonNameArray[index - 1] = bName
       setMarketplaceButtonName(buttonNameArray);
       // break;
       return;
     }
-    if (!isApproved['WOOL'] && currentOffer[3] != "0") {
+    if (!ApprovalForMarketplace['WOOL'] && currentOffer[3] != "0") {
       const bName = `Approve WOOL`
-      buttonNameArray[index] = bName
+      buttonNameArray[index - 1] = bName
       setMarketplaceButtonName(buttonNameArray);
       // break;
       return;
     }
-    if (!isApproved['FISH'] && currentOffer[4] != "0") {
+    if (!ApprovalForMarketplace['FISH'] && currentOffer[4] != "0") {
       const bName = `Approve FISH`
-      buttonNameArray[index] = bName
+      buttonNameArray[index - 1] = bName
       setMarketplaceButtonName(buttonNameArray);
       // break;
       return;
     }
-    buttonNameArray[index] = "Transact"
+    buttonNameArray[index - 1] = "Transact"
     setMarketplaceButtonName(buttonNameArray);
 
     //   console.log(marketplaceButtonNameTemp);
@@ -965,9 +1043,10 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-    changeMarketplaceButtonName(currentOfferId)
-    console.log(isApproved);
-  }, [isApproved])
+    changeMarketplaceButtonName(currentOfferId);
+    console.log(currentOfferId);
+    console.log(ApprovalForMarketplace);
+  }, [ApprovalForMarketplace]);
 
 
   // Function to connect to XDCPay
