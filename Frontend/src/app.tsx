@@ -893,7 +893,7 @@ const App: React.FC = () => {
       // }
 
 
-      changeMarketplaceButtonName(_offerId)
+      changeMarketplaceButtonName(_offerId, offerToAcceptTemp)
 
 
 
@@ -929,8 +929,7 @@ const App: React.FC = () => {
   };
 
   const changeMarketplaceButtonName = async (
-    index: number,
-    // _arrayButtonsName: string[], _offerArray: string[]
+    index: number, _offerArray: string[]
   ) => {
     console.log(index);
     
@@ -940,7 +939,8 @@ const App: React.FC = () => {
 
       for (let i = 0; i < offerStatusArray.length; i++) {
         if (i < index - 1) {
-          if (offerStatusArray[i]) {
+          console.log(offerStatusArray[i])
+          if (offerStatusArray[i] === "true") {
             counter++;
           }
         }
@@ -965,11 +965,11 @@ const App: React.FC = () => {
 
 
       // for (let i = 0; i < currentOffer.length; i++) {
-      console.log("running");
+      console.log(currentOffer);
       // console.log(!isApproved[i]);
 
 
-      if (!ApprovalForMarketplace['WOOD'] && currentOffer[0] != "0") {
+      if (!ApprovalForMarketplace['WOOD'] && _offerArray[0] != "0") {
         const bName = "Approve WOOD"
         buttonNameArray[counter - 1] = bName
         // setMarketplaceButtonName(buttonNameArray);
@@ -977,7 +977,7 @@ const App: React.FC = () => {
         return;
         // break;
       }
-      if (!ApprovalForMarketplace["ROCK"] && currentOffer[1] != "0") {
+      if (!ApprovalForMarketplace["ROCK"] && _offerArray[1] != "0") {
         const bName = `Approve ROCK`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
@@ -985,7 +985,7 @@ const App: React.FC = () => {
         // break;
         return;
       }
-      if (!ApprovalForMarketplace['CLAY'] && currentOffer[2] != "0") {
+      if (!ApprovalForMarketplace['CLAY'] && _offerArray[2] != "0") {
         const bName = `Approve CLAY`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
@@ -993,7 +993,7 @@ const App: React.FC = () => {
         // break;
         return;
       }
-      if (!ApprovalForMarketplace['WOOL'] && currentOffer[3] != "0") {
+      if (!ApprovalForMarketplace['WOOL'] && _offerArray[3] != "0") {
         const bName = `Approve WOOL`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
@@ -1001,7 +1001,7 @@ const App: React.FC = () => {
         // break;
         return;
       }
-      if (!ApprovalForMarketplace['FISH'] && currentOffer[4] != "0") {
+      if (!ApprovalForMarketplace['FISH'] && _offerArray[4] != "0") {
         const bName = `Approve FISH`
         buttonNameArray[counter - 1] = bName
         turnButtonsGray(buttonNameArray);
@@ -1029,7 +1029,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    changeMarketplaceButtonName(currentOfferId);
+    changeMarketplaceButtonName(currentOfferId, currentOfferToAccept);
     console.log(currentOfferId);
     console.log(ApprovalForMarketplace);
   }, [ApprovalForMarketplace]);
