@@ -850,8 +850,8 @@ const App: React.FC = () => {
       setCurrentOfferToAccept(offerToAcceptTemp)
       setOfferToAccept(offerToAcceptTemp);
       // console.log(marketplaceButtonName[_offerId - 1]);
-      console.log(offerToAcceptTemp);
-      console.log(offerToAcceptTemp.length);
+      // console.log(offerToAcceptTemp);
+      // console.log(offerToAcceptTemp.length);
 
       // for (let i = 0; i < offerToAcceptTemp.length; i++) {
       //   console.log("running");
@@ -932,115 +932,101 @@ const App: React.FC = () => {
     index: number,
     // _arrayButtonsName: string[], _offerArray: string[]
   ) => {
+    console.log(index);
+    
+
+    if (index > 0) {
+      let counter = 1;
+
+      for (let i = 0; i < offerStatusArray.length; i++) {
+        if (i < index - 1) {
+          if (offerStatusArray[i]) {
+            counter++;
+          }
+        }
+      }
+      console.log(counter);
 
 
-    // let marketplaceButtonNameTemp = [..._arrayButtonsName];
-    // let currentOffer = [..._offerArray]
 
-    let buttonNameArray = [...marketplaceButtonName]
-    let currentOffer = [...currentOfferToAccept]
-    // console.log(offerToAccept);
-    // console.log(currentOfferToAccept);
+      // let marketplaceButtonNameTemp = [..._arrayButtonsName];
+      // let currentOffer = [..._offerArray]
 
-    // console.log(buttonNameArray);
-    // console.log(currentOfferToAccept);
-    // console.log(currentOffer.length);
-    // console.log(typeof currentOffer);
-    // console.log(currentOffer[1] != "0");
+      let buttonNameArray = [...marketplaceButtonName]
+      let currentOffer = [...currentOfferToAccept]
+      // console.log(offerToAccept);
+      // console.log(currentOfferToAccept); 
 
-
-    // for (let i = 0; i < currentOffer.length; i++) {
-    console.log("running");
-    // console.log(!isApproved[i]);
+      // console.log(index);
+      // console.log(currentOfferToAccept);
+      // console.log(currentOffer.length);
+      // console.log(typeof currentOffer);
+      // console.log(currentOffer[1] != "0");
 
 
-    if (!ApprovalForMarketplace['WOOD'] && currentOffer[0] != "0") {
-      const bName = "Approve WOOD"
-      buttonNameArray[index - 1] = bName
-      setMarketplaceButtonName(buttonNameArray);
-      return;
-      // break;
+      // for (let i = 0; i < currentOffer.length; i++) {
+      console.log("running");
+      // console.log(!isApproved[i]);
+
+
+      if (!ApprovalForMarketplace['WOOD'] && currentOffer[0] != "0") {
+        const bName = "Approve WOOD"
+        buttonNameArray[counter - 1] = bName
+        // setMarketplaceButtonName(buttonNameArray);
+        turnButtonsGray(buttonNameArray);
+        return;
+        // break;
+      }
+      if (!ApprovalForMarketplace["ROCK"] && currentOffer[1] != "0") {
+        const bName = `Approve ROCK`
+        buttonNameArray[counter - 1] = bName
+        turnButtonsGray(buttonNameArray);
+        // setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
+      }
+      if (!ApprovalForMarketplace['CLAY'] && currentOffer[2] != "0") {
+        const bName = `Approve CLAY`
+        buttonNameArray[counter - 1] = bName
+        turnButtonsGray(buttonNameArray);
+        // setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
+      }
+      if (!ApprovalForMarketplace['WOOL'] && currentOffer[3] != "0") {
+        const bName = `Approve WOOL`
+        buttonNameArray[counter - 1] = bName
+        turnButtonsGray(buttonNameArray);
+        // setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
+      }
+      if (!ApprovalForMarketplace['FISH'] && currentOffer[4] != "0") {
+        const bName = `Approve FISH`
+        buttonNameArray[counter - 1] = bName
+        turnButtonsGray(buttonNameArray);
+        // setMarketplaceButtonName(buttonNameArray);
+        // break;
+        return;
+      }
+      buttonNameArray[counter - 1] = "Transact"
+      turnButtonsGray(buttonNameArray);
+
+      // setMarketplaceButtonName(buttonNameArray);
     }
-    if (!ApprovalForMarketplace["ROCK"] && currentOffer[1] != "0") {
-      const bName = `Approve ROCK`
-      buttonNameArray[index - 1] = bName
-      setMarketplaceButtonName(buttonNameArray);
-      // break;
-      return;
-    }
-    if (!ApprovalForMarketplace['CLAY'] && currentOffer[2] != "0") {
-      const bName = `Approve CLAY`
-      buttonNameArray[index - 1] = bName
-      setMarketplaceButtonName(buttonNameArray);
-      // break;
-      return;
-    }
-    if (!ApprovalForMarketplace['WOOL'] && currentOffer[3] != "0") {
-      const bName = `Approve WOOL`
-      buttonNameArray[index - 1] = bName
-      setMarketplaceButtonName(buttonNameArray);
-      // break;
-      return;
-    }
-    if (!ApprovalForMarketplace['FISH'] && currentOffer[4] != "0") {
-      const bName = `Approve FISH`
-      buttonNameArray[index - 1] = bName
-      setMarketplaceButtonName(buttonNameArray);
-      // break;
-      return;
-    }
-    buttonNameArray[index - 1] = "Transact"
-    setMarketplaceButtonName(buttonNameArray);
-
-    //   console.log(marketplaceButtonNameTemp);
-    //   console.log(clayAllowance);
-    //   console.log(clayAllowance === "0");
-    //   console.log(currentOffer);
-    //   console.log((currentOffer[0]));
-    //   console.log((currentOffer[0]) != "0");
-
-
-    // //check allowance of tokens
-    // if (woodAllowance === "0" && currentOffer[0] != "0") {
-    //   console.log("running");
-
-    //   const bName = "Approve WOOD";
-    //   marketplaceButtonNameTemp[index] = bName
-    //   setMarketplaceButtonName(marketplaceButtonNameTemp);
-    //   break;
-    // }
-    // if (rockAllowance === "0" && currentOffer[1] != "0") {
-    //   const bName = "Approve ROCK";
-    //   marketplaceButtonNameTemp[index] = bName
-    //   setMarketplaceButtonName(marketplaceButtonNameTemp);
-    //   break;
-    // }
-    // if (clayAllowance === "0" && currentOffer[2] != "0") {
-    //   const bName = "Approve CLAY";
-    //   marketplaceButtonNameTemp[index] = bName
-    //   setMarketplaceButtonName(marketplaceButtonNameTemp);
-    //   break;
-    // }
-    // if (woolAllowance === "0" && currentOffer[3] != "0") {
-    //   const bName = "Approve WOOL";
-    //   marketplaceButtonNameTemp[index] = bName
-    //   setMarketplaceButtonName(marketplaceButtonNameTemp);
-    //   break;
-    // }
-    // if (fishAllowance === "0" && currentOffer[4] != "0") {
-    //   const bName = "Approve FISH";
-    //   marketplaceButtonNameTemp[index] = bName
-    //   setMarketplaceButtonName(marketplaceButtonNameTemp);
-    //   break;
-
-    // }
-
-    // marketplaceButtonNameTemp[index] = "Transact"
-    // console.log(marketplaceButtonNameTemp);
-
-    // }
-
   }
+
+  const turnButtonsGray = (_buttonNameArray) => {
+
+    for (let i = 0; i < _buttonNameArray.length; i++) {
+      if (_buttonNameArray[i] === "Accept Offer") {
+        _buttonNameArray[i] = "";
+
+      }
+    }
+
+    setMarketplaceButtonName(_buttonNameArray);
+  };
 
   useEffect(() => {
     changeMarketplaceButtonName(currentOfferId);
