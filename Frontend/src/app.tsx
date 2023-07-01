@@ -94,12 +94,15 @@ const App: React.FC = () => {
   const [marketplacePopulated, setMarketplacePopulated] = useState<number>(0);
 
   useEffect(() => {
-    console.log(numberOfOffers)
+    // console.log(numberOfOffers)
     if (numberOfOffers > 0) {
       getStringInfo();
-      getCreatorInfo();
     }
   });
+
+  useEffect(() => {    
+    getCreatorInfo();
+  }, [offerStringArray])
 
 
   useEffect(() => {
@@ -139,24 +142,24 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-    // console.log(marketplacePopulated);
+    console.log(marketplacePopulated);
   }, [marketplacePopulated])
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     // Code to be executed after 1 second
-  //     if (marketplacePopulated < 3) {        
-  //       window.location.reload();
-  //     }
-  //   }, 2000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Code to be executed after 1 second
+      if (marketplacePopulated < 1) {        
+        console.log("done");
+        
+        // window.location.reload();
+      }
+    }, 2000);
 
-  //   return () => clearTimeout(timer); // Clean up the timer on component unmount
-  // }, []);
+    return () => clearTimeout(timer); // Clean up the timer on component unmount
+  }, []);
 
   useEffect(() => {
-    if (marketplacePopulated < 3) {
-      // if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
-      // if (offerCreatorArray[0] === "true" || offerCreatorArray[0] === "false") 
+    if (marketplacePopulated < 2) {
       {
         try {
           for (let i = 0; i < numberOfOffers; i++) {
