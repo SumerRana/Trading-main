@@ -3,12 +3,12 @@ import "./app.css";
 import { Web3ModalContext } from "./contexts/Web3ModalProvider";
 import { BlockchainContext } from "./contexts/BlockchainProvider";
 import { HashLoader } from "react-spinners";
+import { stringToHex } from "web3-utils";
 
 interface QuerriedOffer {
   id: number;
   offerString: string | null;
   offerCrreator: string | null;
-  offerStatus: string | null;
 }
 
 const App: React.FC = () => {
@@ -41,11 +41,9 @@ const App: React.FC = () => {
   //available Offers data
   const [numberOfOffers, setNumberOfOffers] = useState(0);
 
-  const [offerStatus, setOfferStatus] = useState<string>('');
   const [offerString, setOfferString] = useState<string>('');
   const [offerCreator, setofferCreator] = useState<string>('');
   const [offerStringArray, setOfferStringArray] = useState<string[]>([]);
-  const [offerStatusArray, setOfferStatusArray] = useState<string[]>([]);
   const [offerCreatorArray, setOfferCreatorArray] = useState<string[]>([]);
 
 
@@ -96,10 +94,13 @@ const App: React.FC = () => {
   const [marketplacePopulated, setMarketplacePopulated] = useState<number>(0);
 
   useEffect(() => {
-    getStatusInfo();
-    getStringInfo();
-    getCreatorInfo();
+    console.log(numberOfOffers)
+    if (numberOfOffers > 0) {
+      getStringInfo();
+      getCreatorInfo();
+    }
   });
+
 
   useEffect(() => {
     getTokenAllowance();
@@ -138,24 +139,7 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-    if (offerStatusArray[0] === "undefined" || offerStatusArray[0] === "") {
-      getStatusInfo();
-    }
-  }, [offerStatusArray]);
-
-  useEffect(() => {
-    if (offerStringArray[0] === "undefined" || offerStringArray[0] === "") {
-      getStringInfo();
-    }
-  }, [offerStatusArray])
-  useEffect(() => {
-    if (offerCreatorArray[0] === "undefined" || offerCreatorArray[0] === "") {
-      getCreatorInfo();
-    }
-  }, [offerCreatorArray])
-
-  useEffect(() => {
-    console.log(marketplacePopulated);
+    // console.log(marketplacePopulated);
   }, [marketplacePopulated])
 
   // useEffect(() => {
@@ -171,18 +155,17 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (marketplacePopulated < 3) {
-      if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
+      // if (offerStatusArray[0] != "undefined" && offerCreatorArray[0] != "undefined" && offerStringArray[0] != "undefined") {
+      // if (offerCreatorArray[0] === "true" || offerCreatorArray[0] === "false") 
+      {
         try {
-          for (let i = 0; i < offerStringArray.length; i++) {
-            if (offerStatusArray[i] === "true") {
-              let newOffer: QuerriedOffer = {
-                id: i + 1,
-                offerString: offerStringArray[i],
-                offerCrreator: offerCreatorArray[i],
-                offerStatus: offerStatusArray[i]
-              };
-              setQuerriedOffers((prevState) => [...prevState, newOffer]);
-            }
+          for (let i = 0; i < numberOfOffers; i++) {
+            let newOffer: QuerriedOffer = {
+              id: i + 1,
+              offerString: offerStringArray[i],
+              offerCrreator: offerCreatorArray[i],
+            };
+            setQuerriedOffers((prevState) => [...prevState, newOffer]);
           }
           setMarketplacePopulated(marketplacePopulated + 1);
         } catch (error) {
@@ -190,28 +173,16 @@ const App: React.FC = () => {
         }
       }
     }
-  }, [offerStatusArray]);
+  }, [offerCreatorArray]);
 
 
   const getStringInfo = async () => {
     try {
       if (web3 && account && chainId) {
         const _offerString = await tradeOfferWrapper?.getOfferStringsArray();
-        if (_offerString != offerStatus) {
-          setOfferString(String(_offerString));
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching offer info:", error);
-    }
-  };
-
-  const getStatusInfo = async () => {
-    try {
-      if (web3 && account && chainId) {
-        const _offerStatus = await tradeOfferWrapper?.getOfferStatusArray();
-        if (String(_offerStatus) != offerStatus) {
-          setOfferStatus(String(_offerStatus));
+        const newOfferStringArray = (String(_offerString)).split(",");
+        if (!(newOfferStringArray[0] === offerStringArray[0])) {
+          setOfferStringArray(newOfferStringArray);
         }
       }
     } catch (error) {
@@ -223,30 +194,15 @@ const App: React.FC = () => {
     try {
       if (web3 && account && chainId) {
         const _offerCreator = await tradeOfferWrapper?.getOfferCreatorsArray();
-        if (String(_offerCreator) != offerCreator) {
-          setofferCreator(String(_offerCreator));
+        const newOfferCreatorsArray = (String(_offerCreator)).split(",");
+        if (newOfferCreatorsArray[0] != offerCreatorArray[0]) {
+          setOfferCreatorArray(newOfferCreatorsArray);
         }
       }
     } catch (error) {
       console.error("Error fetching offer info:", error);
     }
   };
-  useEffect(() => {
-    const newOfferStatusArray = offerStatus.split(",");
-    setOfferStatusArray(newOfferStatusArray);
-    // setOfferStatusTest(offerStatus)
-  }, [offerStatus])
-
-  useEffect(() => {
-    const newOfferStringArray = offerString.split(",");
-    setOfferStringArray(newOfferStringArray);
-  }, [offerString])
-
-  useEffect(() => {
-    const newOfferCreatorsArray = offerCreator.split(",");
-    setOfferCreatorArray(newOfferCreatorsArray);
-  }, [offerStatus])
-
 
   // Function to add a new token to the tokensOffered state
   const handleAddTokenOffered = () => {
@@ -524,12 +480,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     for (let i = 0; i < offerCreatorArray.length; i++) {
-      if (offerStatusArray[i] === "true") {
-        if (offerCreatorArray[i] === "true") {
-          setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
-        } else {
-          setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
-        }
+      if (offerCreatorArray[i] === "true") {
+        setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
+      } else {
+        setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
+
       }
     }
   }, [offerCreatorArray])
@@ -715,17 +670,13 @@ const App: React.FC = () => {
     let counter = 0;
 
     for (var i = 0; i < (numberOfOffers) + 1; i++) {
+      if (buttonsToGray[counter] === "Accept Offer" && i != _offerId - 1) {
 
-      if (offerStatusArray[i] === "true") {
-        if (buttonsToGray[counter] === "Accept Offer" && i != _offerId - 1) {
-
-          var buttonElement = buttons[counter] as HTMLButtonElement;
-          buttonElement.disabled = true;
-          buttonsToGray[counter] = "";
-        }
-        counter++;
-      } else {
+        var buttonElement = buttons[counter] as HTMLButtonElement;
+        buttonElement.disabled = true;
+        buttonsToGray[counter] = "";
       }
+      counter++;
     }
     setMarketplaceButtonName(buttonsToGray);
     setCurrentOfferId(_offerId)
@@ -766,14 +717,14 @@ const App: React.FC = () => {
     if (index > 0) {
       let counter = 1;
 
-      for (let i = 0; i < offerStatusArray.length; i++) {
-        if (i < index - 1) {
-          console.log(offerStatusArray[i])
-          if (offerStatusArray[i] === "true") {
-            counter++;
-          }
-        }
-      }
+      // for (let i = 0; i < offerStatusArray.length; i++) {
+      //   if (i < index - 1) {
+      //     console.log(offerStatusArray[i])
+      //     if (offerStatusArray[i] === "true") {
+      //       counter++;
+      //     }
+      //   }
+      // }
       let buttonNameArray = [...marketplaceButtonName]
       let currentOffer = [...currentOfferToAccept]
       console.log(currentOffer);
