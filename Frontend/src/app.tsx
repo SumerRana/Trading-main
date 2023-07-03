@@ -100,9 +100,15 @@ const App: React.FC = () => {
     }
   });
 
-  useEffect(() => {    
+  useEffect(() => {
     getCreatorInfo();
+    console.log(offerStringArray);
   }, [offerStringArray])
+
+  useEffect(() => {
+    console.log(offerCreatorArray);
+
+  }, [offerCreatorArray])
 
 
   useEffect(() => {
@@ -148,9 +154,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       // Code to be executed after 1 second
-      if (marketplacePopulated < 1) {        
+      if (marketplacePopulated < 1) {
         console.log("done");
-        
+
         // window.location.reload();
       }
     }, 2000);
@@ -162,13 +168,17 @@ const App: React.FC = () => {
     if (marketplacePopulated < 2) {
       {
         try {
-          for (let i = 0; i < numberOfOffers; i++) {
-            let newOffer: QuerriedOffer = {
-              id: i + 1,
-              offerString: offerStringArray[i],
-              offerCrreator: offerCreatorArray[i],
-            };
-            setQuerriedOffers((prevState) => [...prevState, newOffer]);
+          for (let i = 0; i < offerStringArray.length; i++) {
+            if (offerStringArray[i] !== '') {
+              console.log(offerStringArray[i]);
+              console.log(offerCreatorArray[i]);
+              let newOffer: QuerriedOffer = {
+                id: i + 1,
+                offerString: offerStringArray[i],
+                offerCrreator: offerCreatorArray[i],
+              };
+              setQuerriedOffers((prevState) => [...prevState, newOffer]);
+            }
           }
           setMarketplacePopulated(marketplacePopulated + 1);
         } catch (error) {
@@ -483,11 +493,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     for (let i = 0; i < offerCreatorArray.length; i++) {
-      if (offerCreatorArray[i] === "true") {
-        setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
-      } else {
-        setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
-
+      if (offerStringArray[i] !== '') {
+        if (offerCreatorArray[i] === "true") {
+          setMarketplaceButtonName(prevState => [...prevState, 'Cancel Offer']);
+        } else {
+          setMarketplaceButtonName(prevState => [...prevState, 'Accept Offer']);
+        }
       }
     }
   }, [offerCreatorArray])
