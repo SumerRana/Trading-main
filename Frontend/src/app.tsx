@@ -832,26 +832,13 @@ const App: React.FC = () => {
                     <div>
                       {
                         loading ? <HashLoader color="#0ca02c" /> :
-                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer" ||
-                            marketplaceButtonName[index] == "Transact" ||
-                            marketplaceButtonName[index] == "Approve WOOD" ||
-                            marketplaceButtonName[index] == "Approve ROCK" ||
-                            marketplaceButtonName[index] == "Approve CLAY" ||
-                            marketplaceButtonName[index] == "Approve WOOL" ||
-                            marketplaceButtonName[index] == "Approve FISH"
+                          <button className={`defaultbtn ${marketplaceButtonName[index] == "Accept Offer"
                             ? "acceptbtn" :
                             marketplaceButtonName[index] == "Cancel Offer" ? "cancelbtn" :
                               "graybtn"}`} onClick={() => {
                                 marketplaceButtonName[index] === "Cancel Offer" ? handleCancelOffer(offer?.id) :
-                                  marketplaceButtonName[index] === 'Accept Offer' ? handleAcceptOffer(offer?.id) :
-                                    marketplaceButtonName[index] === "Approve WOOD" ? handleApproveWood(true) :
-                                      marketplaceButtonName[index] === 'Approve ROCK' ? handleApproveRock(true) :
-                                        marketplaceButtonName[index] === 'Approve CLAY' ? handleApproveClay(true) :
-                                          marketplaceButtonName[index] === 'Approve WOOL' ? handleApproveWool(true) :
-                                            marketplaceButtonName[index] === 'Approve FISH' ? handleApproveFish(true) :
-                                              marketplaceButtonName[index] === 'Transact' ? handleTransactAcceptOffer(offer?.id) :
-
-                                                console.log("")
+                                  marketplaceButtonName[index] === 'Accept Offer' ? handleTransactAcceptOffer(offer?.id) :
+                                    console.log("")
                               }}
                           >
                             {marketplaceButtonName[index]}
@@ -862,7 +849,7 @@ const App: React.FC = () => {
                 ))}
             </ul>
           ) : (
-            <p>No open offers available.</p>
+            <HashLoader color="#0ca02c" />
           )}
         </div>
 
