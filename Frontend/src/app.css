@@ -117,6 +117,23 @@ button {
 .acceptbtn:hover{
   scale: 1.1;
 }
+.approvebtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: block;
+  margin: 15px;
+  color: white;
+  background: #0ca02c !important;
+  transition: all 0.2s linear;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.approvebtn:hover{
+  scale: 1.1;
+}
 .cancelbtn:hover{
   scale: 1.1;
 }
@@ -139,6 +156,12 @@ button {
 } */
 
 .graybtn {
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: block;
+  margin: 15px;
   width: 1 px;
 }
 
